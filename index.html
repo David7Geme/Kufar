@@ -3,101 +3,101 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Супер Маркетплейс</title>
-    
+    <title>Кот-Маркет: Аккаунты</title>
     <link rel="icon" href="logo.jpg" type="image/jpeg">
-
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: Arial, sans-serif; background-color: #f5f6f8; color: #333; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; }
         
-        /* Шапка сайта */
-        header {
-            background-color: #ffffff;
-            padding: 15px 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            position: sticky;
-            top: 0;
+        /* Экран входа и регистрации */
+        #authScreen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #00d36a; display: flex; align-items: center; justify-content: center; z-index: 2000;
         }
+        .auth-box { background: white; padding: 25px; border-radius: 20px; width: 90%; max-width: 350px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
         
-        .logo-container { display: flex; align-items: center; gap: 10px; }
+        /* Стили интерфейса */
+        header { background: #fff; padding: 10px 20px; display: none; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); sticky: top; }
+        .logo-img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
+        .container { max-width: 800px; margin: 15px auto; padding: 0 10px; display: none; }
         
-        /* Стилизуем твое фото под круглый логотип */
-        .logo-img {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%; /* Делает фото круглым */
-            object-fit: cover;
-        }
-        
-        .add-btn {
-            background-color: #00d369; /* Цвет кнопки в стиле Куфара */
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            font-weight: bold;
-            cursor: pointer;
-        }
+        /* Кнопки и инпуты */
+        input, textarea { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 10px; font-size: 16px; outline: none; }
+        .btn { width: 100%; padding: 12px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .btn-main { background: #00d36a; color: white; }
+        .btn-main:hover { background: #00b359; }
 
-        /* Сетка объявлений */
-        .container { max-width: 1200px; margin: 20px auto; padding: 0 15px; }
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 20px;
-        }
+        /* Сетка товаров */
+        .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        .card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .card-img { width: 100%; height: 130px; object-fit: cover; background: #eee; }
+        .card-info { padding: 8px; }
+        .card-price { font-weight: bold; font-size: 1.1em; }
+        .author-name { font-size: 0.75em; color: #888; margin-bottom: 4px; }
 
-        /* Карточка товара */
-        .card {
-            background: white;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            transition: transform 0.2s;
-        }
-        .card:hover { transform: translateY(-5px); }
-        .card-img { width: 100%; height: 150px; background-color: #ddd; object-fit: cover; }
-        .card-info { padding: 15px; }
-        .card-price { font-size: 1.2em; font-weight: bold; margin-bottom: 5px; }
-        .card-title { font-size: 0.9em; color: #555; margin-bottom: 10px; }
-        .card-location { font-size: 0.8em; color: #888; }
+        /* Модалка */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center; }
+        .modal-content { background: white; padding: 20px; border-radius: 15px; width: 90%; max-width: 400px; }
     </style>
 </head>
 <body>
 
-    <header>
-        <div class="logo-container">
-            <img src="logo.jpg" alt="Логотип" class="logo-img">
-            <h2>Доска</h2>
-        </div>
-        <button class="add-btn">Подать объявление</button>
-    </header>
-
-    <div class="container">
-        <div class="grid" id="listings">
-            <div class="card">
-                <img src="https://via.placeholder.com/300x200" alt="Товар" class="card-img">
-                <div class="card-info">
-                    <div class="card-price">50 BYN</div>
-                    <div class="card-title">Велосипед горный б/у</div>
-                    <div class="card-location">Брест</div>
-                </div>
-            </div>
-            
-            <div class="card">
-                <img src="https://via.placeholder.com/300x200" alt="Товар" class="card-img">
-                <div class="card-info">
-                    <div class="card-price">1200 BYN</div>
-                    <div class="card-title">Смартфон в отличном состоянии</div>
-                    <div class="card-location">Минск</div>
-                </div>
-            </div>
+    <div id="authScreen">
+        <div class="auth-box" id="authBox">
+            <center><img src="logo.jpg" class="logo-img" style="width:70px; height:70px; margin-bottom:10px;"></center>
+            <h2 id="authTitle" style="text-align:center; margin-bottom:15px;">Вход</h2>
+            <input type="text" id="userInp" placeholder="Придумайте логин">
+            <input type="password" id="passInp" placeholder="Пароль">
+            <button class="btn btn-main" onclick="handleAuth()" id="authBtn">Войти или Создать</button>
+            <p id="authHint" style="font-size: 0.8em; color: #666; margin-top: 10px; text-align: center;">
+                Если логина нет — аккаунт создастся автоматически.
+            </p>
         </div>
     </div>
 
-</body>
-</html>
+    <header id="h">
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <img src="logo.jpg" class="logo-img">
+            <b id="userNameLabel"></b>
+        </div>
+        <button class="btn btn-main" style="width: auto; padding: 8px 15px;" onclick="showAdd(true)">+ Подать</button>
+    </header>
+
+    <div class="container" id="c">
+        <div class="grid" id="grid"></div>
+        <button onclick="logout()" style="margin-top: 20px; background: none; border: none; color: #888; width: 100%;">Выйти из аккаунта</button>
+    </div>
+
+    <div id="addM" class="modal">
+        <div class="modal-content">
+            <h3>Новое объявление</h3>
+            <input type="text" id="t" placeholder="Название">
+            <input type="number" id="p" placeholder="Цена (BYN)">
+            <input type="text" id="i" placeholder="Ссылка на фото">
+            <button class="btn btn-main" onclick="add()">Опубликовать</button>
+            <button class="btn" onclick="showAdd(false)" style="margin-top: 5px; background: #eee;">Отмена</button>
+        </div>
+    </div>
+
+    <script>
+        // Загружаем данные из памяти браузера
+        let users = JSON.parse(localStorage.getItem('k_users')) || {}; // {логин: пароль}
+        let ads = JSON.parse(localStorage.getItem('k_ads')) || [];
+        let me = "";
+
+        function handleAuth() {
+            const u = document.getElementById('userInp').value.trim();
+            const p = document.getElementById('passInp').value.trim();
+
+            if(u.length < 3 || p.length < 4) {
+                alert("Логин от 3 символов, пароль от 4!");
+                return;
+            }
+
+            if(users[u]) {
+                // Если пользователь есть — проверяем пароль
+                if(users[u] === p) {
+                    login(u);
+                } else {
+                    alert("Неверный пароль для этого логина!");
+        
