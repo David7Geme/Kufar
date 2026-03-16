@@ -3,29 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Кот-Маркет: Аккаунты</title>
+    <title>Кот-Маркет: Админ-панель</title>
     <link rel="icon" href="logo.jpg" type="image/jpeg">
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
+        body { background: #f0f2f5; padding-bottom: 30px; }
         
-        /* Экран входа и регистрации */
+        /* Экран входа */
         #authScreen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #00d36a; display: flex; align-items: center; justify-content: center; z-index: 2000;
         }
-        .auth-box { background: white; padding: 25px; border-radius: 20px; width: 90%; max-width: 350px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+        .auth-box { background: white; padding: 25px; border-radius: 20px; width: 90%; max-width: 350px; text-align: center; }
         
-        /* Стили интерфейса */
-        header { background: #fff; padding: 10px 20px; display: none; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); sticky: top; }
-        .logo-img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
+        /* Основной сайт */
+        header { 
+            background: #fff; padding: 10px 20px; display: none; 
+            justify-content: space-between; align-items: center; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100;
+        }
+        .logo-img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid #00d36a; }
         .container { max-width: 800px; margin: 15px auto; padding: 0 10px; display: none; }
         
-        /* Кнопки и инпуты */
-        input, textarea { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 10px; font-size: 16px; outline: none; }
-        .btn { width: 100%; padding: 12px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        /* Кнопки */
+        input, textarea { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 10px; font-size: 16px; }
+        .btn { width: 100%; padding: 12px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
         .btn-main { background: #00d36a; color: white; }
-        .btn-main:hover { background: #00b359; }
 
         /* Сетка товаров */
         .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
@@ -33,71 +36,17 @@
         .card-img { width: 100%; height: 130px; object-fit: cover; background: #eee; }
         .card-info { padding: 8px; }
         .card-price { font-weight: bold; font-size: 1.1em; }
-        .author-name { font-size: 0.75em; color: #888; margin-bottom: 4px; }
+        .author-name { font-size: 0.75em; color: #00d36a; font-weight: bold; margin-bottom: 4px; }
 
-        /* Модалка */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center; }
-        .modal-content { background: white; padding: 20px; border-radius: 15px; width: 90%; max-width: 400px; }
-    </style>
-</head>
-<body>
+        /* Админка */
+        #adminSection { 
+            display: none; background: #333; color: white; 
+            margin-top: 20px; padding: 15px; border-radius: 15px; 
+        }
+        .user-item { 
+            display: flex; justify-content: space-between; 
+            padding: 5px 0; border-bottom: 1px solid #444; font-size: 0.9em;
+        }
 
-    <div id="authScreen">
-        <div class="auth-box" id="authBox">
-            <center><img src="logo.jpg" class="logo-img" style="width:70px; height:70px; margin-bottom:10px;"></center>
-            <h2 id="authTitle" style="text-align:center; margin-bottom:15px;">Вход</h2>
-            <input type="text" id="userInp" placeholder="Придумайте логин">
-            <input type="password" id="passInp" placeholder="Пароль">
-            <button class="btn btn-main" onclick="handleAuth()" id="authBtn">Войти или Создать</button>
-            <p id="authHint" style="font-size: 0.8em; color: #666; margin-top: 10px; text-align: center;">
-                Если логина нет — аккаунт создастся автоматически.
-            </p>
-        </div>
-    </div>
-
-    <header id="h">
-        <div style="display: flex; align-items: center; gap: 8px;">
-            <img src="logo.jpg" class="logo-img">
-            <b id="userNameLabel"></b>
-        </div>
-        <button class="btn btn-main" style="width: auto; padding: 8px 15px;" onclick="showAdd(true)">+ Подать</button>
-    </header>
-
-    <div class="container" id="c">
-        <div class="grid" id="grid"></div>
-        <button onclick="logout()" style="margin-top: 20px; background: none; border: none; color: #888; width: 100%;">Выйти из аккаунта</button>
-    </div>
-
-    <div id="addM" class="modal">
-        <div class="modal-content">
-            <h3>Новое объявление</h3>
-            <input type="text" id="t" placeholder="Название">
-            <input type="number" id="p" placeholder="Цена (BYN)">
-            <input type="text" id="i" placeholder="Ссылка на фото">
-            <button class="btn btn-main" onclick="add()">Опубликовать</button>
-            <button class="btn" onclick="showAdd(false)" style="margin-top: 5px; background: #eee;">Отмена</button>
-        </div>
-    </div>
-
-    <script>
-        // Загружаем данные из памяти браузера
-        let users = JSON.parse(localStorage.getItem('k_users')) || {}; // {логин: пароль}
-        let ads = JSON.parse(localStorage.getItem('k_ads')) || [];
-        let me = "";
-
-        function handleAuth() {
-            const u = document.getElementById('userInp').value.trim();
-            const p = document.getElementById('passInp').value.trim();
-
-            if(u.length < 3 || p.length < 4) {
-                alert("Логин от 3 символов, пароль от 4!");
-                return;
-            }
-
-            if(users[u]) {
-                // Если пользователь есть — проверяем пароль
-                if(users[u] === p) {
-                    login(u);
-                } else {
-                    alert("Неверный пароль для этого логина!");
-        
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0
+                                                                                                              
