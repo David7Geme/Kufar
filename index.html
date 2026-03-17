@@ -2,301 +2,175 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Kufar | kywar Ultimate</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kufar | Мой Проект</title>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <style>
-        :root {
-            --main-green: #2ecc71;
-            --dark-gray: #2d3436;
-            --light-gray: #f1f2f6;
-            --white: #ffffff;
-            --shadow: 0 4px 12px rgba(0,0,0,0.08);
-        }
-
-        body { 
-            background: var(--light-gray); 
-            color: var(--dark-gray); 
-            font-family: 'Segoe UI', Roboto, sans-serif; 
-            margin: 0; 
-            padding: 0; 
-            padding-bottom: 90px; 
-            overflow-x: hidden;
-        }
-
-        /* ШАПКА И ПОИСК */
-        .header {
-            background: var(--white);
-            padding: 12px 16px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            border-bottom: 1px solid #e0e0e0;
-        }
-        .logo-img {
-            width: 40px;
-            height: 40px;
-            border-radius: 10px;
-            object-fit: cover;
-            background: var(--main-green);
-        }
-        .search-container {
-            background: #f0f2f5;
-            flex: 1;
-            display: flex;
-            align-items: center;
-            padding: 10px 16px;
-            border-radius: 25px;
-        }
-        .search-container input {
-            background: transparent;
-            border: none;
-            outline: none;
-            width: 100%;
-            font-size: 15px;
-            color: #333;
-        }
-
-        /* БАННЕРЫ */
-        .banners-wrapper {
-            display: flex;
-            gap: 12px;
-            padding: 15px;
-            overflow-x: auto;
-            scrollbar-width: none;
-        }
-        .banners-wrapper::-webkit-scrollbar { display: none; }
-        .banner-card {
-            min-width: 280px;
-            height: 140px;
-            border-radius: 20px;
-            padding: 20px;
-            color: white;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            box-sizing: border-box;
-            box-shadow: var(--shadow);
-        }
-        .b-1 { background: linear-gradient(135deg, #1e3799, #4a69bd); }
-        .b-2 { background: linear-gradient(135deg, #079992, #38ada9); }
-        .banner-card h3 { margin: 0; font-size: 20px; line-height: 1.2; }
-
-        /* КАТЕГОРИИ */
-        .section-header {
-            padding: 10px 16px;
-            font-weight: 800;
-            font-size: 18px;
-            color: #1e272e;
-        }
-        .categories-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            padding: 0 16px 20px;
-        }
-        .category-item {
-            background: var(--white);
-            border-radius: 16px;
-            padding: 15px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.03);
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-        .category-item:active { transform: scale(0.96); }
-        .cat-icon {
-            width: 40px;
-            height: 40px;
-            background: #f0fdf4;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 22px;
-        }
-        .cat-text { font-size: 14px; font-weight: 600; }
-
-        /* ОБЪЯВЛЕНИЯ (ЛЕНТА) */
-        .ads-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            padding: 0 16px;
-        }
-        .ad-card {
-            background: var(--white);
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: var(--shadow);
-            position: relative;
-            display: flex;
-            flex-direction: column;
-        }
-        .ad-thumb {
-            width: 100%;
-            height: 130px;
-            background: #dfe6e9;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            color: #95a5a6;
-        }
-        .ad-body { padding: 12px; flex-grow: 1; }
-        .ad-price { font-size: 18px; font-weight: 800; color: #000; margin-bottom: 4px; }
-        .ad-title { font-size: 14px; color: #4b4b4b; line-height: 1.3; height: 36px; overflow: hidden; }
+        body { font-family: sans-serif; background: #f4f4f7; margin: 0; padding-bottom: 70px; }
+        .header { background: white; padding: 15px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #ddd; position: sticky; top: 0; z-index: 100; }
+        .search-bar { flex: 1; background: #f0f0f3; border-radius: 20px; padding: 8px 15px; font-size: 14px; border: none; }
         
-        /* КНОПКИ ДЛЯ ТЕБЯ (АДМИН) */
-        .admin-actions {
-            background: #f8f9fa;
-            padding: 8px;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            border-top: 1px solid #eee;
-        }
-        .adm-btn {
-            border: none;
-            padding: 8px;
-            border-radius: 8px;
-            font-weight: bold;
-            font-size: 11px;
-            cursor: pointer;
-            width: 100%;
-            text-transform: uppercase;
-        }
-        .btn-del { background: #ff7675; color: white; }
-        .btn-ban { background: #2d3436; color: white; }
+        /* КАТЕГОРИИ (как на твоем фото) */
+        .categories { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 15px; }
+        .cat-card { background: white; border-radius: 12px; padding: 10px; display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 500; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .cat-icon { width: 40px; height: 40px; background: #e8f5e9; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
 
-        /* НИЖНЕЕ МЕНЮ */
-        .tab-bar {
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            background: var(--white);
-            display: flex;
-            justify-content: space-around;
-            padding: 10px 0;
-            border-top: 1px solid #eee;
-            box-shadow: 0 -4px 15px rgba(0,0,0,0.05);
-            z-index: 2000;
-        }
-        .tab-item {
-            text-align: center;
-            color: #a4b0be;
-            font-size: 10px;
-            text-decoration: none;
-            flex: 1;
-            cursor: pointer;
-            border: none;
-            background: none;
-        }
-        .tab-item.active { color: var(--main-green); }
-        .tab-icon { font-size: 24px; display: block; margin-bottom: 4px; }
+        /* ОБЪЯВЛЕНИЯ */
+        .feed { padding: 0 15px; }
+        .ad-card { background: white; border-radius: 12px; margin-bottom: 15px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .ad-info { padding: 12px; }
+        .ad-price { color: #00a550; font-weight: bold; font-size: 18px; margin: 5px 0; }
+        
+        /* СТРАНИЦЫ */
+        .page { display: none; }
+        .page.active { display: block; }
 
-        /* МОДАЛЬНЫЕ ОКНА */
-        .modal-page {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: var(--white);
-            z-index: 5000;
-            padding: 24px;
-            box-sizing: border-box;
-            display: none;
-            flex-direction: column;
-        }
-        .modal-page.show { display: flex; }
-        .modal-header {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 30px;
-        }
-        .btn-back {
-            background: #f1f2f6;
-            border: none;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            font-size: 18px;
-            cursor: pointer;
-        }
+        /* АДМИН-ПАНЕЛЬ */
+        .admin-section { padding: 20px; background: #fff; margin: 15px; border-radius: 15px; border: 2px dashed #ff5a5f; }
 
-        .input-group { margin-bottom: 16px; }
-        .input-group label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 14px; }
-        .input-group input, .input-group textarea {
-            width: 100%;
-            padding: 14px;
-            border: 1px solid #ddd;
-            border-radius: 12px;
-            font-size: 16px;
-            box-sizing: border-box;
-            background: #f9f9f9;
-        }
-
-        .btn-submit {
-            background: var(--main-green);
-            color: white;
-            border: none;
-            padding: 18px;
-            border-radius: 15px;
-            font-weight: bold;
-            font-size: 16px;
-            width: 100%;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-
-        .hidden { display: none !important; }
-
-        /* СПИСОК БАНОВ В АДМИНКЕ */
-        .ban-card {
-            background: #fff0f0;
-            padding: 12px;
-            border-radius: 12px;
-            margin-bottom: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border: 1px solid #ffcccc;
-        }
+        /* НИЖНЯЯ ПАНЕЛЬ */
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #eee; z-index: 1000; }
+        .nav-item { text-align: center; font-size: 10px; color: #888; cursor: pointer; flex: 1; transition: 0.3s; }
+        .nav-item.active { color: #00a550; }
+        .nav-icon { font-size: 22px; }
     </style>
 </head>
 <body>
 
-<div class="header">
-    <img src="Logo.jpg" class="logo-img" alt="L" id="main-logo">
-    <div class="search-container">
-        <input type="text" id="global-search" placeholder="Поиск в kywar">
-    </div>
-</div>
-
-<div id="home-view">
-    <div class="banners-wrapper">
-        <div class="banner-card b-1"><h3>Квартиры на сутки<br>в твоем городе</h3></div>
-        <div class="banner-card b-2"><h3>Безопасные покупки<br>с доставкой</h3></div>
+    <div class="header">
+        <div style="color: #00a550; font-size: 24px; font-weight: bold;">K</div>
+        <input type="text" class="search-bar" placeholder="Поиск на Kufar">
     </div>
 
-    <div class="section-header">Категории</div>
-    <div class="categories-grid">
-        <div class="category-item"><div class="cat-icon">🏠</div><span class="cat-text">Жилье</span></div>
-        <div class="category-item"><div class="cat-icon">🚗</div><span class="cat-text">Авто</span></div>
-        <div class="category-item"><div class="cat-icon">📱</div><span class="cat-text">Техника</span></div>
-        <div class="category-item"><div class="cat-icon">👗</div><span class="cat-text">Одежда</span></div>
-    </div>
-
-    <div class="section-header">Рекомендации для вас</div>
-    <div class="ads-grid" id="main-feed">
+    <div id="home" class="page active">
+        <div class="categories">
+            <div class="cat-card"><div class="cat-icon">🏠</div> Недвижимость</div>
+            <div class="cat-card"><div class="cat-icon">🚗</div> Авто</div>
+            <div class="cat-card"><div class="cat-icon">🛠</div> Услуги</div>
+            <div class="cat-card"><div class="cat-icon">⚽</div> Хобби и спорт</div>
         </div>
-</div>
+        
+        <div class="feed">
+            <h3 style="padding-left: 5px;">Рекомендации</h3>
+            <div id="catalogList">Загрузка...</div>
+        </div>
+    </div>
 
-<div id="modal-profile
-    
+    <div id="profile" class="page">
+        <div style="padding: 40px 20px; text-align: center;" id="authBlock">
+            <h2>Войти в профиль</h2>
+            <input type="email" id="userEmail" style="width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid #ddd;" placeholder="Ваша почта">
+            <button onclick="login()" style="width: 100%; background: #00a550; color: white; border: none; padding: 15px; border-radius: 8px; font-weight: bold;">Войти</button>
+        </div>
+        
+        <div id="userInfo" style="display:none; padding: 20px; text-align: center;">
+            <div style="width: 80px; height: 80px; background: #ddd; border-radius: 50%; margin: 0 auto 15px;"></div>
+            <h3 id="loggedInEmail"></h3>
+            <p style="color: #666;">Статус: Владелец проекта</p>
+            <button onclick="location.reload()" style="background: #eee; border: none; padding: 10px 20px; border-radius: 5px;">Выйти</button>
+        </div>
+    </div>
+
+    <div id="adminPanel" class="page">
+        <div class="admin-section">
+            <h3>Управление Kufar 🛠</h3>
+            <p>Здесь ты можешь добавлять новые товары напрямую в базу.</p>
+            <input type="text" id="itemName" placeholder="Название товара" style="width: 100%; padding: 10px; margin-bottom: 10px; border-radius: 5px; border: 1px solid #ccc;">
+            <input type="number" id="itemPrice" placeholder="Цена (BYN)" style="width: 100%; padding: 10px; margin-bottom: 10px; border-radius: 5px; border: 1px solid #ccc;">
+            <button onclick="postToKufar()" style="width: 100%; background: #ff5a5f; color: white; border: none; padding: 12px; border-radius: 8px;">Опубликовать в каталог</button>
+        </div>
+        <div id="adminStats" style="padding: 20px;">
+            <h4>Статистика базы данных:</h4>
+            <div id="dbCount">Загрузка...</div>
+        </div>
+    </div>
+
+    <div class="bottom-nav">
+        <div class="nav-item active" onclick="showPage('home', this)">
+            <div class="nav-icon">🏠</div><div>Главная</div>
+        </div>
+        <div class="nav-item">
+            <div class="nav-icon">🤍</div><div>Избранное</div>
+        </div>
+        <div id="adminBtn" class="nav-item" style="display: none; color: #ff5a5f;" onclick="showPage('adminPanel', this)">
+            <div class="nav-icon">🛠</div><div>Админ</div>
+        </div>
+        <div class="nav-item">
+            <div class="nav-icon">💬</div><div>Сообщения</div>
+        </div>
+        <div class="nav-item" onclick="showPage('profile', this)">
+            <div class="nav-icon">👤</div><div>Профиль</div>
+        </div>
+    </div>
+
+    <script>
+        // ТВОЙ КОНФИГ ИЗ FIREBASE
+        const firebaseConfig = {
+            apiKey: "AIzaSyD4_NVq2Tw6TaEDMTZj86zbvtJUbHOE6js",
+            authDomain: "kywar-c73ac.firebaseapp.com",
+            databaseURL: "https://kywar-c73ac-default-rtdb.firebaseio.com",
+            projectId: "kywar-c73ac",
+            storageBucket: "kywar-c73ac.firebasestorage.app",
+            messagingSenderId: "817464444818",
+            appId: "1:817464444818:web:b9ab1f1ca2c9531358e34b"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // Функции навигации
+        function showPage(pageId, element) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            element.classList.add('active');
+        }
+
+        // Логика входа для тебя
+        function login() {
+            const email = document.getElementById('userEmail').value;
+            if(email === "davidgemer507@gmail.com") {
+                document.getElementById('adminBtn').style.display = 'block'; // Показываем кнопку админа
+                document.getElementById('authBlock').style.display = 'none';
+                document.getElementById('userInfo').style.display = 'block';
+                document.getElementById('loggedInEmail').innerText = email;
+                alert("Привет, Босс! Панель админа разблокирована.");
+            } else {
+                alert("Доступ запрещен. Только для davidgemer507");
+            }
+        }
+
+        // Загрузка каталога
+        database.ref('items').on('value', (snapshot) => {
+            const catalog = document.getElementById('catalogList');
+            catalog.innerHTML = '';
+            let count = 0;
+            snapshot.forEach((child) => {
+                const item = child.val();
+                count++;
+                catalog.innerHTML += `
+                    <div class="ad-card">
+                        <div style="height: 150px; background: #eee; display: flex; align-items: center; justify-content: center; color: #999;">Фото товара</div>
+                        <div class="ad-info">
+                            <div style="font-size: 14px;">${item.title}</div>
+                            <div class="ad-price">${item.price} BYN</div>
+                        </div>
+                    </div>
+                `;
+            });
+            document.getElementById('dbCount').innerText = "Всего товаров в базе: " + count;
+        });
+
+        // Функция публикации (для админа)
+        function postToKufar() {
+            const name = document.getElementById('itemName').value;
+            const price = document.getElementById('itemPrice').value;
+            if(name && price) {
+                database.ref('items').push({ title: name, price: price });
+                alert("Товар добавлен в каталог!");
+            }
+        }
+    </script>
+</body>
+</html>
