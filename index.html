@@ -3,117 +3,364 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kufar | Объявления</title>
+    <title>Kufar Professional | Торговая площадка</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #f4f4f7; margin: 0; padding-bottom: 90px; }
-        .header { background: white; padding: 10px 15px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid #eee; position: sticky; top: 0; z-index: 1000; height: 60px; box-sizing: border-box; }
-        .logo-img { height: 35px; cursor: pointer; }
-        .search-bar { flex: 1; background: #f0f0f3; border-radius: 20px; padding: 8px 15px; font-size: 14px; border: none; outline: none; }
+        :root {
+            --kufar-green: #00a550;
+            --kufar-red: #ff5a5f;
+            --bg-main: #f4f4f7;
+            --white: #ffffff;
+            --text-main: #2c2c2c;
+            --text-secondary: #828282;
+            --shadow: 0 4px 12px rgba(0,0,0,0.08);
+            --radius: 12px;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-main);
+            margin: 0;
+            padding-bottom: 85px;
+            color: var(--text-main);
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* --- ВЕРХНЯЯ ПАНЕЛЬ (HEADER) --- */
+        .header {
+            background: var(--white);
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid #e0e0e0;
+            position: sticky;
+            top: 0;
+            z-index: 2000;
+            height: 64px;
+            box-sizing: border-box;
+        }
+
+        .logo-box img {
+            height: 34px;
+            display: block;
+            cursor: pointer;
+        }
+
+        .search-wrapper {
+            flex: 1;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            background: #f0f0f3;
+            border: 1px solid transparent;
+            border-radius: 10px;
+            padding: 10px 12px 10px 38px;
+            font-size: 15px;
+            outline: none;
+            transition: all 0.2s;
+            box-sizing: border-box;
+        }
+
+        .search-input:focus {
+            background: var(--white);
+            border-color: var(--kufar-green);
+            box-shadow: 0 0 0 3px rgba(0, 165, 80, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 16px;
+            color: var(--text-secondary);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        /* --- БАННЕРЫ С ПРОКРУТКОЙ --- */
+        .stories-container {
+            display: flex;
+            gap: 12px;
+            padding: 16px;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+        }
+
+        .stories-container::-webkit-scrollbar { display: none; }
+
+        .story-card {
+            min-width: 130px;
+            height: 160px;
+            border-radius: var(--radius);
+            padding: 12px;
+            color: white;
+            font-weight: 700;
+            font-size: 13px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            scroll-snap-align: start;
+            position: relative;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .story-1 { background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.6) 100%), url('https://picsum.photos/200/300?1'); background-size: cover; }
+        .story-2 { background: #4a90e2; }
+        .story-3 { background: #f5a623; }
+
+        /* --- КАТЕГОРИИ --- */
+        .cat-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            padding: 0 16px 16px;
+        }
+
+        .cat-btn {
+            background: var(--white);
+            border-radius: var(--radius);
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: inherit;
+            font-size: 14px;
+            font-weight: 600;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+
+        .cat-icon {
+            width: 40px;
+            height: 40px;
+            background: #f8f8f8;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        /* --- ТАБЫ (ФИЛЬТРЫ) --- */
+        .tabs-header {
+            display: flex;
+            padding: 0 16px;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 16px;
+        }
+
+        .tab-item {
+            padding: 12px 0;
+            margin-right: 24px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            cursor: pointer;
+            position: relative;
+        }
+
+        .tab-item.active {
+            color: var(--text-main);
+        }
+
+        .tab-item.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--kufar-green);
+        }
+
+        /* --- СПИСОК ОБЪЯВЛЕНИЙ --- */
+        .feed-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            padding: 0 16px;
+        }
+
+        .product-card {
+            background: var(--white);
+            border-radius: var(--radius);
+            overflow: hidden;
+            position: relative;
+            box-shadow: var(--shadow);
+            transition: transform 0.1s;
+        }
+
+        .product-card:active { transform: scale(0.97); }
+
+        .img-placeholder {
+            height: 140px;
+            background: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ccc;
+        }
+
+        .badge-viewed {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            background: rgba(0,0,0,0.4);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+        }
+
+        .heart-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 32px;
+            height: 32px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            cursor: pointer;
+        }
+
+        .card-info { padding: 10px; }
+        .card-price { font-size: 18px; font-weight: 800; margin-bottom: 4px; }
+        .card-title { font-size: 14px; color: #444; line-height: 1.3; height: 36px; overflow: hidden; }
+        .card-meta { font-size: 11px; color: #aaa; margin-top: 8px; }
+
+        /* --- НИЖНЯЯ НАВИГАЦИЯ --- */
+        .bottom-bar {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background: var(--white);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            border-top: 1px solid #eee;
+            z-index: 3000;
+        }
+
+        .nav-link {
+            text-align: center;
+            font-size: 10px;
+            color: var(--text-secondary);
+            flex: 1;
+            cursor: pointer;
+        }
+
+        .nav-link.active { color: var(--kufar-green); font-weight: 600; }
+        .nav-link i { font-size: 24px; display: block; margin-bottom: 2px; }
+
+        /* --- СТРАНИЦЫ --- */
+        .page-content { display: none; padding-top: 10px; }
+        .page-content.active { display: block; }
+
+        /* --- ФОРМЫ --- */
+        .form-card { background: white; margin: 16px; padding: 20px; border-radius: var(--radius); }
+        .input-group { margin-bottom: 16px; }
+        .input-group label { display: block; font-size: 13px; margin-bottom: 6px; color: #666; }
+        .custom-input { width: 100%; padding: 14px; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; font-size: 16px; }
+        .main-btn { background: var(--kufar-green); color: white; border: none; padding: 16px; width: 100%; border-radius: 12px; font-weight: 700; cursor: pointer; }
         
-        .page { display: none; }
-        .page.active { display: block; }
-
-        .categories { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 15px; }
-        .cat-card { background: white; border-radius: 12px; padding: 12px; display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.05); cursor: pointer; }
-        
-        .ad-card { background: white; border-radius: 12px; margin: 15px; padding: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-        .ad-price { color: #00a550; font-weight: bold; font-size: 22px; margin: 8px 0; }
-
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #eee; z-index: 1000; }
-        .nav-item { text-align: center; font-size: 10px; color: #888; cursor: pointer; flex: 1; }
-        .nav-item.active { color: #00a550; font-weight: bold; }
-        .nav-icon { font-size: 22px; margin-bottom: 3px; }
-
-        .form-box { background: white; margin: 15px; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        input, textarea { width: 100%; padding: 14px; margin-bottom: 12px; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; font-size: 16px; }
-        .btn-main { background: #00a550; color: white; border: none; padding: 16px; border-radius: 10px; width: 100%; font-weight: bold; cursor: pointer; }
+        /* Skeleton Animation */
+        .skeleton { background: #eee; background: linear-gradient(90deg, #ececec 8%, #f5f5f5 18%, #ececec 33%); background-size: 200% 100%; animation: 1.5s shine linear infinite; }
+        @keyframes shine { to { background-position-x: -200%; } }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <img src="logo.jpg" class="logo-img" alt="Kufar" onclick="showPage('home')" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/d/d4/Kufar_logo.png'">
-        <input type="text" class="search-bar" placeholder="Поиск на Kufar">
-        <div style="color: #00a550; font-size: 30px; cursor: pointer;" onclick="goToPost()">+</div>
-    </div>
+    <header class="header">
+        <div class="logo-box">
+            <img src="logo.jpg" alt="Kufar" onclick="navigate('home')" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/d/d4/Kufar_logo.png'">
+        </div>
+        <div class="search-wrapper">
+            <span class="search-icon">🔍</span>
+            <input type="text" class="search-input" placeholder="Поиск на Kufar">
+        </div>
+    </header>
 
-    <div id="home" class="page active">
-        <div class="categories">
-            <div class="cat-card">🏠 Недвижимость</div>
-            <div class="cat-card">🚗 Авто</div>
-            <div class="cat-card">🛠 Услуги</div>
-            <div class="cat-card">📱 Техника</div>
-        </div>
-        <div id="catalogList"></div>
-    </div>
+    <main id="home-page" class="page-content active">
+        <section class="stories-container">
+            <div class="story-card story-1">Пора переобуться 🚗</div>
+            <div class="story-card story-2">Жилье на сутки 🏠</div>
+            <div class="story-card story-3">Работа для всех 💼</div>
+            <div class="story-card story-1">Авто с пробегом 🚙</div>
+        </section>
 
-    <div id="favs" class="page" style="padding: 50px 20px; text-align: center;">
-        <h3>Избранные товары</h3>
-        <p style="color: #888;">Здесь будут товары, которые вы отметили сердечком.</p>
-    </div>
+        <section class="cat-grid">
+            <div class="cat-btn"><div class="cat-icon">🏠</div> Недвижимость</div>
+            <div class="cat-btn"><div class="cat-icon">🚗</div> Авто</div>
+            <div class="cat-btn"><div class="cat-icon">📱</div> Техника</div>
+            <div class="cat-btn"><div class="cat-icon">👕</div> Мода</div>
+        </section>
 
-    <div id="chats" class="page" style="padding: 50px 20px; text-align: center;">
-        <h3>Ваши сообщения</h3>
-        <p style="color: #888;">У вас пока нет активных диалогов.</p>
-    </div>
+        <nav class="tabs-header">
+            <div class="tab-item active">Рекомендации</div>
+            <div class="tab-item">Все объявления</div>
+        </nav>
 
-    <div id="profile" class="page">
-        <div id="authArea" style="padding: 60px 20px; text-align: center;">
-            <h2>Вход</h2>
-            <input type="email" id="emailInput" placeholder="Введите Email">
-            <button class="btn-main" onclick="handleLogin()">Войти</button>
+        <div id="loader" class="feed-grid">
+            <div class="product-card"><div class="img-placeholder skeleton"></div><div class="card-info"><div class="card-price skeleton" style="height:20px; width:60%;"></div></div></div>
+            <div class="product-card"><div class="img-placeholder skeleton"></div><div class="card-info"><div class="card-price skeleton" style="height:20px; width:60%;"></div></div></div>
         </div>
-        
-        <div id="userProfile" style="display:none; padding: 40px 20px; text-align: center;">
-            <div style="width: 70px; height: 70px; background: #00a550; color: white; border-radius: 50%; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; font-size: 25px; font-weight: bold;" id="avatar">U</div>
-            <h3 id="displayEmail"></h3>
-            <p id="statusLabel"></p>
-            <button onclick="location.reload()" style="background: none; border: 1px solid #ccc; padding: 8px 15px; border-radius: 5px; cursor: pointer;">Выход</button>
-        </div>
-    </div>
 
-    <div id="postPage" class="page">
-        <div class="form-box">
-            <h2 style="margin-top: 0;">Новое объявление</h2>
-            <input type="text" id="pTitle" placeholder="Название">
-            <input type="number" id="pPrice" placeholder="Цена (BYN)">
-            <textarea id="pDesc" rows="5" placeholder="Описание товара..."></textarea>
-            <button class="btn-main" onclick="submitPost()">Опубликовать</button>
-        </div>
-    </div>
+        <div id="main-feed" class="feed-grid">
+            </div>
+    </main>
 
-    <div id="adminPage" class="page">
-        <div class="form-box" style="border: 2px solid #ff5a5f;">
-            <h2 style="color: #ff5a5f; margin-top: 0;">Админ-панель 🛠</h2>
-            <p>Управление базой данных доступно только вам.</p>
-            <button class="btn-main" style="background: #ff5a5f;" onclick="alert('Система готова к работе')">Статус сервера: OK</button>
+    <section id="profile-page" class="page-content">
+        <div id="login-form" class="form-card">
+            <h2 style="margin-top:0">Вход в профиль</h2>
+            <div class="input-group">
+                <label>Электронная почта</label>
+                <input type="email" id="email-field" class="custom-input" placeholder="example@mail.com">
+            </div>
+            <button class="main-btn" onclick="userLogin()">Продолжить</button>
         </div>
-    </div>
+        <div id="profile-info" class="form-card" style="display:none; text-align:center;">
+            <div style="width:80px; height:80px; background:#eee; border-radius:50%; margin: 0 auto 15px; display:flex; align-items:center; justify-content:center; font-size:30px">👤</div>
+            <h3 id="user-name-label"></h3>
+            <p id="user-rank" style="color:var(--text-secondary)"></p>
+            <button class="main-btn" style="background:#eee; color:#333; margin-top:20px;" onclick="location.reload()">Выйти из аккаунта</button>
+        </div>
+    </section>
 
-    <div class="bottom-nav">
-        <div class="nav-item active" id="m-home" onclick="showPage('home')">
-            <div class="nav-icon">🏠</div><div>Главная</div>
+    <section id="post-page" class="page-content">
+        <div class="form-card">
+            <h2 style="margin-top:0">Новое объявление</h2>
+            <div class="input-group"><input type="text" id="post-title" class="custom-input" placeholder="Название товара"></div>
+            <div class="input-group"><input type="number" id="post-price" class="custom-input" placeholder="Цена (BYN)"></div>
+            <div class="input-group"><textarea id="post-desc" class="custom-input" rows="6" placeholder="Описание..."></textarea></div>
+            <button class="main-btn" onclick="createNewAd()">Опубликовать на Kufar</button>
         </div>
-        <div class="nav-item" id="m-favs" onclick="showPage('favs')">
-            <div class="nav-icon">🤍</div><div>Избранное</div>
-        </div>
-        <div class="nav-item" id="m-post" onclick="goToPost()">
-            <div class="nav-icon">➕</div><div>Подать</div>
-        </div>
-        <div class="nav-item" id="m-chats" onclick="showPage('chats')">
-            <div class="nav-icon">💬</div><div>Чаты</div>
-        </div>
-        <div class="nav-item" id="adminMenuBtn" style="display: none; color: #ff5a5f;" onclick="showPage('adminPage')">
-            <div class="nav-icon">⚙️</div><div>Админ</div>
-        </div>
-        <div class="nav-item" id="m-profile" onclick="showPage('profile')">
-            <div class="nav-icon">👤</div><div>Профиль</div>
-        </div>
-    </div>
+    </section>
+
+    <nav class="bottom-bar">
+        <div class="nav-link active" id="btn-home" onclick="navigate('home')"><i>🏠</i>Главная</div>
+        <div class="nav-link"><i>🤍</i>Избранное</div>
+        <div class="nav-link" id="btn-post" onclick="checkAuthAndGoPost()"><i>➕</i>Подать</div>
+        <div class="nav-link"><i>💬</i>Сообщения</div>
+        <div class="nav-link" id="btn-profile" onclick="navigate('profile')"><i>👤</i>Профиль</div>
+        <div class="nav-link" id="btn-admin" style="display:none; color:var(--kufar-red)" onclick="navigate('admin')"><i>⚙️</i>Админ</div>
+    </nav>
 
     <script>
+        // Инициализация Firebase (Твой конфиг)
         const firebaseConfig = {
             apiKey: "AIzaSyD4_NVq2Tw6TaEDMTZj86zbvtJUbHOE6js",
             authDomain: "kywar-c73ac.firebaseapp.com",
@@ -126,67 +373,93 @@
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
-        let userEmail = null;
+        let loggedInEmail = null;
 
-        function showPage(id) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            const map = {'home':'m-home', 'favs':'m-favs', 'postPage':'m-post', 'chats':'m-chats', 'profile':'m-profile', 'adminPage':'adminMenuBtn'};
-            if(map[id]) document.getElementById(map[id]).classList.add('active');
+        function navigate(page) {
+            document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+            
+            if(page === 'home') {
+                document.getElementById('home-page').classList.add('active');
+                document.getElementById('btn-home').classList.add('active');
+            } else if(page === 'profile') {
+                document.getElementById('profile-page').classList.add('active');
+                document.getElementById('btn-profile').classList.add('active');
+            } else if(page === 'post') {
+                document.getElementById('post-page').classList.add('active');
+                document.getElementById('btn-post').classList.add('active');
+            }
         }
 
-        function handleLogin() {
-            const email = document.getElementById('emailInput').value.trim().toLowerCase();
-            if(!email) return alert("Введите почту!");
+        function userLogin() {
+            const email = document.getElementById('email-field').value.trim().toLowerCase();
+            if(!email) return alert("Введите Email!");
 
-            userEmail = email;
-            document.getElementById('authArea').style.display = 'none';
-            document.getElementById('userProfile').style.display = 'block';
-            document.getElementById('displayEmail').innerText = email;
-            document.getElementById('avatar').innerText = email.charAt(0).toUpperCase();
+            loggedInEmail = email;
+            document.getElementById('login-form').style.display = 'none';
+            document.getElementById('profile-info').style.display = 'block';
+            document.getElementById('user-name-label').innerText = email;
 
+            // Только для твоего davidgemer507@gmail.com включаем админ-панель
             if(email === "davidgemer507@gmail.com") {
-                document.getElementById('adminMenuBtn').style.display = 'block';
-                document.getElementById('statusLabel').innerText = "Владелец";
-                document.getElementById('statusLabel').style.color = "#ff5a5f";
-            }
-            showPage('home');
-        }
-
-        function goToPost() {
-            if(!userEmail) {
-                alert("Сначала войдите в профиль!");
-                showPage('profile');
+                document.getElementById('btn-admin').style.display = 'block';
+                document.getElementById('user-rank').innerText = "Владелец проекта";
+                document.getElementById('user-rank').style.color = "red";
             } else {
-                showPage('postPage');
+                document.getElementById('user-rank').innerText = "Пользователь Kufar";
+            }
+            navigate('home');
+        }
+
+        function checkAuthAndGoPost() {
+            if(!loggedInEmail) {
+                alert("Пожалуйста, войдите в профиль!");
+                navigate('profile');
+            } else {
+                navigate('post');
             }
         }
 
-        function submitPost() {
-            const t = document.getElementById('pTitle').value;
-            const p = document.getElementById('pPrice').value;
-            const d = document.getElementById('pDesc').value;
-            if(t && p) {
-                database.ref('items').push({ title: t, price: p, desc: d, author: userEmail });
-                alert("Опубликовано!");
-                showPage('home');
+        function createNewAd() {
+            const title = document.getElementById('post-title').value;
+            const price = document.getElementById('post-price').value;
+            const desc = document.getElementById('post-desc').value;
+
+            if(title && price) {
+                database.ref('items').push({
+                    title: title,
+                    price: price,
+                    desc: desc,
+                    owner: loggedInEmail,
+                    date: new Date().toLocaleDateString()
+                });
+                alert("Объявление опубликовано!");
+                navigate('home');
             }
         }
 
-        database.ref('items').on('value', (snapshot) => {
-            const list = document.getElementById('catalogList');
-            list.innerHTML = '';
-            snapshot.forEach((child) => {
-                const item = child.val();
-                list.innerHTML += `
-                    <div class="ad-card">
-                        <b>${item.title}</b>
-                        <div class="ad-price">${item.price} BYN</div>
-                        <div style="font-size: 14px; color: #666;">${item.desc || ''}</div>
-                    </div>`;
+        // Загрузка данных в реальном времени
+        database.ref('items').on('value', (snap) => {
+            document.getElementById('loader').style.display = 'none';
+            const feed = document.getElementById('main-feed');
+            feed.innerHTML = '';
+            snap.forEach((child) => {
+                const data = child.val();
+                feed.innerHTML += `
+                    <article class="product-card">
+                        <div class="badge-viewed">Просмотрено</div>
+                        <div class="heart-btn">🤍</div>
+                        <div class="img-placeholder">📸</div>
+                        <div class="card-info">
+                            <div class="card-price">${data.price} BYN</div>
+                            <div class="card-title">${data.title}</div>
+                            <div class="card-meta">Минск • ${data.date || 'Сегодня'}</div>
+                        </div>
+                    </article>
+                `;
             });
         });
     </script>
 </body>
-</html>
+    </html>
+            
