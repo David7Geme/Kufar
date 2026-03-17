@@ -3,121 +3,117 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kufar Project | David Edition</title>
+    <title>Kufar | Объявления</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f4f7; margin: 0; padding-bottom: 80px; }
-        
-        /* ШАПКА */
-        .header { background: white; padding: 10px 15px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid #eee; position: sticky; top: 0; z-index: 1000; }
-        .logo-img { height: 35px; cursor: pointer; object-fit: contain; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f4f4f7; margin: 0; padding-bottom: 90px; }
+        .header { background: white; padding: 10px 15px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid #eee; position: sticky; top: 0; z-index: 1000; height: 60px; box-sizing: border-box; }
+        .logo-img { height: 35px; cursor: pointer; }
         .search-bar { flex: 1; background: #f0f0f3; border-radius: 20px; padding: 8px 15px; font-size: 14px; border: none; outline: none; }
-        .header-icons { display: flex; gap: 15px; color: #888; font-size: 20px; }
-
-        /* КАТЕГОРИИ (как на твоем фото) */
-        .categories { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 15px; }
-        .cat-card { background: white; border-radius: 12px; padding: 10px; display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 500; box-shadow: 0 2px 4px rgba(0,0,0,0.05); cursor: pointer; }
-        .cat-icon { width: 40px; height: 40px; background: #f0fcf5; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
-
-        /* КАТАЛОГ ОБЪЯВЛЕНИЙ */
-        .feed { padding: 0 15px; }
-        .ad-card { background: white; border-radius: 12px; margin-bottom: 15px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-        .ad-img-placeholder { height: 160px; background: #e0e0e0; display: flex; align-items: center; justify-content: center; color: #777; font-weight: bold; }
-        .ad-info { padding: 12px; }
-        .ad-price { color: #00a550; font-weight: bold; font-size: 18px; margin: 5px 0; }
         
-        /* СТРАНИЦЫ */
         .page { display: none; }
         .page.active { display: block; }
 
-        /* АДМИН-ПАНЕЛЬ */
-        .admin-box { background: #fff; margin: 15px; padding: 20px; border-radius: 15px; border: 2px dashed #ff5a5f; }
-        .admin-input { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
+        .categories { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 15px; }
+        .cat-card { background: white; border-radius: 12px; padding: 12px; display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.05); cursor: pointer; }
+        
+        .ad-card { background: white; border-radius: 12px; margin: 15px; padding: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .ad-price { color: #00a550; font-weight: bold; font-size: 22px; margin: 8px 0; }
 
-        /* НИЖНЯЯ ПАНЕЛЬ */
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid #eee; z-index: 1000; }
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #eee; z-index: 1000; }
         .nav-item { text-align: center; font-size: 10px; color: #888; cursor: pointer; flex: 1; }
-        .nav-item.active { color: #00a550; }
-        .nav-icon { font-size: 22px; margin-bottom: 2px; }
+        .nav-item.active { color: #00a550; font-weight: bold; }
+        .nav-icon { font-size: 22px; margin-bottom: 3px; }
 
-        /* Кнопка войти */
-        .login-btn { width: 100%; background: #00a550; color: white; border: none; padding: 15px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px; }
+        .form-box { background: white; margin: 15px; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        input, textarea { width: 100%; padding: 14px; margin-bottom: 12px; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; font-size: 16px; }
+        .btn-main { background: #00a550; color: white; border: none; padding: 16px; border-radius: 10px; width: 100%; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <img src="Logo.jpg" class="logo-img" alt="Kufar" onclick="showPage('home')" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3649/3649278.png';">
+        <img src="logo.jpg" class="logo-img" alt="Kufar" onclick="showPage('home')" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/d/d4/Kufar_logo.png'">
         <input type="text" class="search-bar" placeholder="Поиск на Kufar">
-        <div class="header-icons">
-            <span>🛒</span>
-            <span style="color: #00a550; font-weight: bold;">+</span>
-        </div>
+        <div style="color: #00a550; font-size: 30px; cursor: pointer;" onclick="goToPost()">+</div>
     </div>
 
     <div id="home" class="page active">
         <div class="categories">
-            <div class="cat-card"><div class="cat-icon">🏠</div> Недвижимость</div>
-            <div class="cat-card"><div class="cat-icon">🚗</div> Авто</div>
-            <div class="cat-card"><div class="cat-icon">🛠</div> Услуги</div>
-            <div class="cat-card"><div class="cat-icon">⚽</div> Хобби и спорт</div>
+            <div class="cat-card">🏠 Недвижимость</div>
+            <div class="cat-card">🚗 Авто</div>
+            <div class="cat-card">🛠 Услуги</div>
+            <div class="cat-card">📱 Техника</div>
         </div>
-        
-        <div class="feed">
-            <h3 style="margin-left: 5px;">Рекомендации</h3>
-            <div id="catalogList">Загрузка товаров из базы...</div>
-        </div>
+        <div id="catalogList"></div>
+    </div>
+
+    <div id="favs" class="page" style="padding: 50px 20px; text-align: center;">
+        <h3>Избранные товары</h3>
+        <p style="color: #888;">Здесь будут товары, которые вы отметили сердечком.</p>
+    </div>
+
+    <div id="chats" class="page" style="padding: 50px 20px; text-align: center;">
+        <h3>Ваши сообщения</h3>
+        <p style="color: #888;">У вас пока нет активных диалогов.</p>
     </div>
 
     <div id="profile" class="page">
-        <div id="authBlock" style="padding: 50px 20px; text-align: center;">
-            <div style="font-size: 60px; margin-bottom: 15px;">👤</div>
-            <h2>Войти в профиль</h2>
-            <p style="color: #666;">Введите вашу почту, чтобы управлять Kufar</p>
-            <input type="email" id="userEmail" class="admin-input" placeholder="davidgemer507@gmail.com">
-            <button onclick="login()" class="login-btn">Войти</button>
+        <div id="authArea" style="padding: 60px 20px; text-align: center;">
+            <h2>Вход</h2>
+            <input type="email" id="emailInput" placeholder="Введите Email">
+            <button class="btn-main" onclick="handleLogin()">Войти</button>
         </div>
         
-        <div id="userInfo" style="display:none; padding: 40px 20px; text-align: center;">
-            <div style="width: 80px; height: 80px; background: #00a550; color: white; border-radius: 50%; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; font-size: 35px; font-weight: bold;">D</div>
-            <h2 id="loggedInEmail"></h2>
-            <p style="color: #00a550; font-weight: bold;">Статус: Владелец проекта</p>
-            <button onclick="location.reload()" style="margin-top: 20px; background: none; border: 1px solid #ccc; padding: 10px 20px; border-radius: 8px; cursor: pointer;">Выйти из аккаунта</button>
+        <div id="userProfile" style="display:none; padding: 40px 20px; text-align: center;">
+            <div style="width: 70px; height: 70px; background: #00a550; color: white; border-radius: 50%; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; font-size: 25px; font-weight: bold;" id="avatar">U</div>
+            <h3 id="displayEmail"></h3>
+            <p id="statusLabel"></p>
+            <button onclick="location.reload()" style="background: none; border: 1px solid #ccc; padding: 8px 15px; border-radius: 5px; cursor: pointer;">Выход</button>
         </div>
     </div>
 
-    <div id="adminPanel" class="page">
-        <div class="admin-box">
-            <h3 style="margin-top:0;">Добавить товар в базу 🛠</h3>
-            <input type="text" id="itemName" class="admin-input" placeholder="Название (например: iPhone 13)">
-            <input type="number" id="itemPrice" class="admin-input" placeholder="Цена (только цифры)">
-            <textarea id="itemDesc" class="admin-input" rows="3" placeholder="Описание товара..."></textarea>
-            <button onclick="postToKufar()" style="width: 100%; background: #ff5a5f; color: white; border: none; padding: 15px; border-radius: 8px; font-weight: bold; cursor: pointer;">Опубликовать на Kufar</button>
+    <div id="postPage" class="page">
+        <div class="form-box">
+            <h2 style="margin-top: 0;">Новое объявление</h2>
+            <input type="text" id="pTitle" placeholder="Название">
+            <input type="number" id="pPrice" placeholder="Цена (BYN)">
+            <textarea id="pDesc" rows="5" placeholder="Описание товара..."></textarea>
+            <button class="btn-main" onclick="submitPost()">Опубликовать</button>
         </div>
-        <div id="dbStats" style="padding: 10px 25px; color: #888; font-size: 14px;"></div>
+    </div>
+
+    <div id="adminPage" class="page">
+        <div class="form-box" style="border: 2px solid #ff5a5f;">
+            <h2 style="color: #ff5a5f; margin-top: 0;">Админ-панель 🛠</h2>
+            <p>Управление базой данных доступно только вам.</p>
+            <button class="btn-main" style="background: #ff5a5f;" onclick="alert('Система готова к работе')">Статус сервера: OK</button>
+        </div>
     </div>
 
     <div class="bottom-nav">
-        <div class="nav-item active" id="nav-home" onclick="showPage('home')">
+        <div class="nav-item active" id="m-home" onclick="showPage('home')">
             <div class="nav-icon">🏠</div><div>Главная</div>
         </div>
-        <div class="nav-item">
+        <div class="nav-item" id="m-favs" onclick="showPage('favs')">
             <div class="nav-icon">🤍</div><div>Избранное</div>
         </div>
-        <div id="adminBtn" class="nav-item" style="display: none; color: #ff5a5f;" onclick="showPage('adminPanel')">
-            <div class="nav-icon">🛠</div><div>Админ</div>
+        <div class="nav-item" id="m-post" onclick="goToPost()">
+            <div class="nav-icon">➕</div><div>Подать</div>
         </div>
-        <div class="nav-item">
-            <div class="nav-icon">💬</div><div>Сообщения</div>
+        <div class="nav-item" id="m-chats" onclick="showPage('chats')">
+            <div class="nav-icon">💬</div><div>Чаты</div>
         </div>
-        <div class="nav-item" id="nav-profile" onclick="showPage('profile')">
+        <div class="nav-item" id="adminMenuBtn" style="display: none; color: #ff5a5f;" onclick="showPage('adminPage')">
+            <div class="nav-icon">⚙️</div><div>Админ</div>
+        </div>
+        <div class="nav-item" id="m-profile" onclick="showPage('profile')">
             <div class="nav-icon">👤</div><div>Профиль</div>
         </div>
     </div>
 
     <script>
-        // ТВОЙ КОНФИГ ИЗ FIREBASE (kywar-c73ac)
         const firebaseConfig = {
             apiKey: "AIzaSyD4_NVq2Tw6TaEDMTZj86zbvtJUbHOE6js",
             authDomain: "kywar-c73ac.firebaseapp.com",
@@ -127,84 +123,70 @@
             messagingSenderId: "817464444818",
             appId: "1:817464444818:web:b9ab1f1ca2c9531358e34b"
         };
-
-        // Инициализация
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
-        // Функция переключения страниц
-        function showPage(pageId) {
+        let userEmail = null;
+
+        function showPage(id) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById(pageId).classList.add('active');
-            
-            // Сброс активных иконок
-            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-            if(pageId === 'home') document.getElementById('nav-home').classList.add('active');
-            if(pageId === 'profile') document.getElementById('nav-profile').classList.add('active');
-            if(pageId === 'adminPanel') document.getElementById('adminBtn').classList.add('active');
+            document.getElementById(id).classList.add('active');
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            const map = {'home':'m-home', 'favs':'m-favs', 'postPage':'m-post', 'chats':'m-chats', 'profile':'m-profile', 'adminPage':'adminMenuBtn'};
+            if(map[id]) document.getElementById(map[id]).classList.add('active');
         }
 
-        // Логика входа (только для твоего email)
-        function login() {
-            const email = document.getElementById('userEmail').value;
+        function handleLogin() {
+            const email = document.getElementById('emailInput').value.trim().toLowerCase();
+            if(!email) return alert("Введите почту!");
+
+            userEmail = email;
+            document.getElementById('authArea').style.display = 'none';
+            document.getElementById('userProfile').style.display = 'block';
+            document.getElementById('displayEmail').innerText = email;
+            document.getElementById('avatar').innerText = email.charAt(0).toUpperCase();
+
             if(email === "davidgemer507@gmail.com") {
-                document.getElementById('adminBtn').style.display = 'block';
-                document.getElementById('authBlock').style.display = 'none';
-                document.getElementById('userInfo').style.display = 'block';
-                document.getElementById('loggedInEmail').innerText = email;
-                alert("Привет, Владелец! Панель админа разблокирована.");
+                document.getElementById('adminMenuBtn').style.display = 'block';
+                document.getElementById('statusLabel').innerText = "Владелец";
+                document.getElementById('statusLabel').style.color = "#ff5a5f";
+            }
+            showPage('home');
+        }
+
+        function goToPost() {
+            if(!userEmail) {
+                alert("Сначала войдите в профиль!");
+                showPage('profile');
             } else {
-                alert("Ошибка: этот аккаунт не имеет прав администратора.");
+                showPage('postPage');
             }
         }
 
-        // Чтение данных из Firebase (Живой каталог)
+        function submitPost() {
+            const t = document.getElementById('pTitle').value;
+            const p = document.getElementById('pPrice').value;
+            const d = document.getElementById('pDesc').value;
+            if(t && p) {
+                database.ref('items').push({ title: t, price: p, desc: d, author: userEmail });
+                alert("Опубликовано!");
+                showPage('home');
+            }
+        }
+
         database.ref('items').on('value', (snapshot) => {
             const list = document.getElementById('catalogList');
             list.innerHTML = '';
-            let count = 0;
-            
             snapshot.forEach((child) => {
                 const item = child.val();
-                count++;
                 list.innerHTML += `
                     <div class="ad-card">
-                        <div class="ad-img-placeholder">PHOTO</div>
-                        <div class="ad-info">
-                            <div style="font-size: 15px; font-weight: 500; color: #333;">${item.title}</div>
-                            <div class="ad-price">${item.price} BYN</div>
-                            <div style="font-size: 12px; color: #999; margin-top: 5px;">Минск • Сегодня</div>
-                        </div>
-                    </div>
-                `;
+                        <b>${item.title}</b>
+                        <div class="ad-price">${item.price} BYN</div>
+                        <div style="font-size: 14px; color: #666;">${item.desc || ''}</div>
+                    </div>`;
             });
-            document.getElementById('dbStats').innerText = "Всего активных объявлений: " + count;
-            if(count === 0) list.innerHTML = "Пока товаров нет. Добавьте первый через панель админа!";
         });
-
-        // Функция публикации товара (для админа)
-        function postToKufar() {
-            const name = document.getElementById('itemName').value;
-            const price = document.getElementById('itemPrice').value;
-            const desc = document.getElementById('itemDesc').value;
-            
-            if(name && price) {
-                database.ref('items').push({
-                    title: name,
-                    price: price,
-                    description: desc,
-                    date: new Date().toLocaleDateString()
-                }).then(() => {
-                    alert("Товар добавлен в каталог!");
-                    document.getElementById('itemName').value = '';
-                    document.getElementById('itemPrice').value = '';
-                    document.getElementById('itemDesc').value = '';
-                    showPage('home'); // Возвращаемся на главную после добавления
-                });
-            } else {
-                alert("Введите название и цену!");
-            }
-        }
     </script>
 </body>
 </html>
