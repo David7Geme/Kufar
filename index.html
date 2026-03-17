@@ -3,85 +3,174 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Куфар — Объявления</title>
+    <title>Kufar | kywar Admin</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; margin: 0; background-color: #f6f6f7; color: #333; }
-        header { background: #fff; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 1000; }
-        .logo-container img { height: 45px; }
-        .add-btn { background: #ff5a19; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; }
-        .search-section { padding: 40px 20px; text-align: center; background: #00b533; }
-        .search-box { display: flex; max-width: 700px; margin: 0 auto; gap: 10px; }
-        input[type="text"], input[type="number"] { flex-grow: 1; padding: 12px; border: none; border-radius: 8px; font-size: 16px; }
-        .main-content { max-width: 1100px; margin: 30px auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; padding: 0 15px; }
-        .card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-        .card-img { width: 100%; height: 180px; background: #eee; display: flex; align-items: center; justify-content: center; color: #bbb; }
-        .card-info { padding: 15px; }
-        .price { font-weight: 800; color: #000; font-size: 1.3em; }
+        body { background: #f2f2f2; color: #333; font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; align-items: center; padding: 0; margin: 0; }
+        .header { background: #fff; width: 100%; padding: 15px 0; text-align: center; border-bottom: 1px solid #ddd; }
+        .header img { max-width: 100px; border-radius: 8px; }
         
-        /* Стили для формы (модальное окно) */
-        #modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; justify-content: center; align-items: center; }
-        .modal-content { background: white; padding: 30px; border-radius: 15px; width: 90%; max-width: 400px; display: flex; flex-direction: column; gap: 15px; }
-        .close-btn { align-self: flex-end; cursor: pointer; font-weight: bold; color: #999; }
+        .search-section { background: #fff; width: 100%; padding: 15px 0; display: flex; flex-direction: column; align-items: center; border-bottom: 1px solid #ddd; }
+        .search-bar { width: 90%; max-width: 600px; display: flex; gap: 10px; }
+        .search-bar input { flex: 1; padding: 10px; border-radius: 20px; border: 1px solid #ccc; outline: none; }
+        
+        .filters-container { display: flex; gap: 8px; overflow-x: auto; width: 90%; max-width: 600px; padding: 10px 0; }
+        .filter-btn { background: #fff; border: 1px solid #ccc; padding: 6px 14px; border-radius: 20px; white-space: nowrap; cursor: pointer; font-size: 13px; }
+
+        .content { width: 90%; max-width: 600px; margin-top: 15px; }
+        .box { background: #fff; padding: 20px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .main-btn { background: #ffcc00; color: #000; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; }
+        
+        .ad-card { background: #fff; padding: 15px; border-radius: 12px; margin-bottom: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); position: relative; }
+        .price { font-size: 18px; font-weight: bold; color: #000; }
+        
+        /* Кнопки админа */
+        .admin-controls { display: flex; gap: 5px; margin-top: 10px; }
+        .del-btn { background: #ff4444; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; }
+        .ban-btn { background: #000; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; }
+        
+        .hidden { display: none; }
+        .banned-msg { color: red; font-weight: bold; text-align: center; padding: 10px; }
     </style>
 </head>
 <body>
 
-<header>
-    <div class="logo-container"><img src="logo.jpg" alt="Куфар"></div>
-    <button class="add-btn" onclick="openModal()">+ Подать объявление</button>
-</header>
+<div class="header">
+    <img src="Logo.jpg" alt="Logo" onerror="this.style.display='none'">
+    <h2 style="margin:0;">Kufar kywar</h2>
+</div>
 
 <div class="search-section">
-    <div class="search-box">
-        <input type="text" placeholder="Искать в объявлениях...">
-        <button style="padding: 10px 20px; background: #333; color: #fff; border: none; border-radius: 8px; cursor: pointer;">Найти</button>
+    <div class="search-bar">
+        <input type="text" id="search-input" placeholder="Поиск товаров...">
+        <button class="main-btn" style="width:auto; padding:0 15px;">Найти</button>
+    </div>
+    <div class="filters-container">
+        <button class="filter-btn">☰ Категории</button>
+        <button class="filter-btn">Цена</button>
+        <button class="filter-btn">Состояние</button>
+        <button class="filter-btn">Продавец</button>
     </div>
 </div>
 
-<div class="main-content" id="ads-container">
+<div class="content">
+    <div class="box" id="auth-box">
+        <input type="email" id="email" placeholder="Email">
+        <input type="password" id="password" placeholder="Пароль">
+        <button class="main-btn" id="login-btn">Войти / Регистрация</button>
     </div>
 
-<div id="modal">
-    <div class="modal-content">
-        <span class="close-btn" onclick="closeModal()">✕ Закрыть</span>
-        <h2>Новое объявление</h2>
-        <input type="text" id="ad-title" placeholder="Название товара">
-        <input type="number" id="ad-price" placeholder="Цена (BYN)">
-        <button class="add-btn" onclick="saveAd()">Опубликовать</button>
+    <div id="ban-message" class="box hidden banned-msg">
+        ВЫ ЗАБАНЕНЫ АДМИНИСТРАЦИЕЙ
     </div>
+
+    <div class="box hidden" id="post-box">
+        <h3>Новое объявление</h3>
+        <input type="text" id="item-title" placeholder="Название">
+        <input type="number" id="item-price" placeholder="Цена">
+        <textarea id="item-desc" placeholder="Описание..."></textarea>
+        <button class="main-btn" id="post-btn">Опубликовать</button>
+    </div>
+
+    <div id="ads-container"></div>
 </div>
 
-<script>
-    const modal = document.getElementById('modal');
-    const container = document.getElementById('ads-container');
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getDatabase, ref, push, onValue, remove, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-    function openModal() { modal.style.display = 'flex'; }
-    function closeModal() { modal.style.display = 'none'; }
+    const firebaseConfig = {
+        apiKey: "AIzaSyD4_NVq2Tw6TaEDMTZj86zbvtJUbHOE6js",
+        authDomain: "kywar-c73ac.firebaseapp.com",
+        databaseURL: "https://kywar-c73ac-default-rtdb.firebaseio.com",
+        projectId: "kywar-c73ac",
+        storageBucket: "kywar-c73ac.firebasestorage.app",
+        messagingSenderId: "817464444818",
+        appId: "1:817464444818:web:eb685caf4d651e5758e34b"
+    };
 
-    function saveAd() {
-        const title = document.getElementById('ad-title').value;
-        const price = document.getElementById('ad-price').value;
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
+    const adminEmail = "davidgemer507@gmail.com";
 
-        if(title && price) {
-            const card = document.createElement('div');
-            card.className = 'card';
-            card.innerHTML = `
-                <div class="card-img">Нет фото</div>
-                <div class="card-info">
-                    <div class="price">${price} BYN</div>
-                    <div class="title">${title}</div>
-                </div>
-            `;
-            container.prepend(card); // Добавляем в начало списка
-            closeModal();
-            // Очищаем поля
-            document.getElementById('ad-title').value = '';
-            document.getElementById('ad-price').value = '';
-        } else {
-            alert("Заполни все поля!");
+    // Авторизация
+    document.getElementById('login-btn').addEventListener('click', async () => {
+        const e = document.getElementById('email').value;
+        const p = document.getElementById('password').value;
+        try { await createUserWithEmailAndPassword(auth, e, p); } 
+        catch { await signInWithEmailAndPassword(auth, e, p).catch(err => alert("Ошибка входа")); }
+    });
+
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            document.getElementById('auth-box').classList.add('hidden');
+            checkBanStatus(user);
         }
-    }
-</script>
+    });
 
+    // Проверка бана
+    function checkBanStatus(user) {
+        onValue(ref(db, `blacklist/${user.uid}`), (snap) => {
+            if (snap.val()) {
+                document.getElementById('post-box').classList.add('hidden');
+                document.getElementById('ban-message').classList.remove('hidden');
+            } else {
+                document.getElementById('post-box').classList.remove('hidden');
+                document.getElementById('ban-message').classList.add('hidden');
+            }
+        });
+    }
+
+    // Публикация
+    document.getElementById('post-btn').addEventListener('click', async () => {
+        await push(ref(db, 'ads'), {
+            title: document.getElementById('item-title').value,
+            price: document.getElementById('item-price').value,
+            desc: document.getElementById('item-desc').value,
+            user: auth.currentUser.email,
+            uid: auth.currentUser.uid
+        });
+        alert("Опубликовано!");
+    });
+
+    // Отображение ленты
+    onValue(ref(db, 'ads'), (snap) => {
+        const container = document.getElementById('ads-container');
+        container.innerHTML = '';
+        const data = snap.val();
+        if (data) {
+            Object.keys(data).reverse().forEach(id => {
+                const ad = data[id];
+                const isAdmin = auth.currentUser && auth.currentUser.email === adminEmail;
+                
+                container.innerHTML += `
+                    <div class="ad-card">
+                        <div class="price">${ad.price} BYN</div>
+                        <h3>${ad.title}</h3>
+                        <p>${ad.desc}</p>
+                        <small>Продавец: ${ad.user}</small>
+                        ${isAdmin ? `
+                            <div class="admin-controls">
+                                <button class="del-btn" onclick="deleteAd('${id}')">Удалить</button>
+                                <button class="ban-btn" onclick="banUser('${ad.uid}', '${ad.user}')">ЗАБАНИТЬ</button>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            });
+        }
+    });
+
+    // Функции админа
+    window.deleteAd = (id) => { if (confirm("Удалить?")) remove(ref(db, `ads/${id}`)); };
+    
+    window.banUser = (uid, email) => {
+        if (confirm(`Забанить пользователя ${email}?`)) {
+            set(ref(db, `blacklist/${uid}`), true);
+            alert("Пользователь заблокирован!");
+        }
+    };
+</script>
 </body>
 </html>
