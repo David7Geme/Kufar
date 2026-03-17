@@ -3,174 +3,123 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kufar | kywar Admin</title>
+    <title>Kufar | kywar</title>
     <style>
-        body { background: #f2f2f2; color: #333; font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; align-items: center; padding: 0; margin: 0; }
-        .header { background: #fff; width: 100%; padding: 15px 0; text-align: center; border-bottom: 1px solid #ddd; }
-        .header img { max-width: 100px; border-radius: 8px; }
-        
-        .search-section { background: #fff; width: 100%; padding: 15px 0; display: flex; flex-direction: column; align-items: center; border-bottom: 1px solid #ddd; }
-        .search-bar { width: 90%; max-width: 600px; display: flex; gap: 10px; }
-        .search-bar input { flex: 1; padding: 10px; border-radius: 20px; border: 1px solid #ccc; outline: none; }
-        
-        .filters-container { display: flex; gap: 8px; overflow-x: auto; width: 90%; max-width: 600px; padding: 10px 0; }
-        .filter-btn { background: #fff; border: 1px solid #ccc; padding: 6px 14px; border-radius: 20px; white-space: nowrap; cursor: pointer; font-size: 13px; }
+        body { 
+            background: #f8f8f8; color: #333; font-family: 'Segoe UI', sans-serif; 
+            margin: 0; padding-bottom: 80px; 
+        }
 
-        .content { width: 90%; max-width: 600px; margin-top: 15px; }
-        .box { background: #fff; padding: 20px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-        .main-btn { background: #ffcc00; color: #000; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; }
-        
-        .ad-card { background: #fff; padding: 15px; border-radius: 12px; margin-bottom: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); position: relative; }
-        .price { font-size: 18px; font-weight: bold; color: #000; }
-        
-        /* Кнопки админа */
-        .admin-controls { display: flex; gap: 5px; margin-top: 10px; }
-        .del-btn { background: #ff4444; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; }
-        .ban-btn { background: #000; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; }
-        
+        /* Чистая верхняя панель без лишних надписей */
+        .top-nav {
+            background: #fff; padding: 10px 15px; display: flex; align-items: center; gap: 10px;
+            position: sticky; top: 0; z-index: 100; border-bottom: 1px solid #eee;
+        }
+        /* Логотип-иконка (твое Logo.jpg) */
+        .brand-logo { width: 35px; height: 35px; border-radius: 8px; object-fit: cover; }
+
+        .search-wrapper {
+            background: #f0f0f0; flex: 1; display: flex; align-items: center;
+            padding: 8px 15px; border-radius: 25px;
+        }
+        .search-wrapper input {
+            background: transparent; border: none; outline: none; width: 100%; font-size: 15px;
+        }
+
+        /* Сетка категорий */
+        .categories-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 15px; }
+        .cat-item {
+            background: #fff; border-radius: 12px; padding: 12px; display: flex; align-items: center; gap: 10px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        .cat-item .icon { width: 32px; height: 32px; background: #eee; border-radius: 6px; }
+
+        /* Лента объявлений */
+        .ads-container { padding: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .ad-card { background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.08); position: relative; }
+        .ad-img { width: 100%; height: 130px; background: #e0e0e0; }
+        .ad-info { padding: 10px; }
+        .ad-price { font-weight: bold; font-size: 17px; margin-bottom: 4px; }
+        .ad-title { font-size: 13px; color: #666; height: 32px; overflow: hidden; }
+
+        /* НИЖНЕЕ МЕНЮ */
+        .bottom-nav {
+            position: fixed; bottom: 0; width: 100%; background: #fff;
+            display: flex; justify-content: space-around; padding: 8px 0;
+            border-top: 1px solid #eee; z-index: 1000;
+        }
+        .nav-item { text-align: center; color: #888; font-size: 10px; text-decoration: none; flex: 1; cursor: pointer; }
+        .nav-item.active { color: #2ecc71; }
+        .nav-icon { font-size: 22px; display: block; margin-bottom: 2px; }
+
+        /* Кнопки админа внутри карточек */
+        .admin-action-btn { 
+            background: rgba(255, 68, 68, 0.9); color: white; border: none; 
+            padding: 4px 8px; border-radius: 4px; font-size: 10px; margin-top: 5px; width: 100%;
+        }
+
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 2000; padding: 20px; box-sizing: border-box; }
         .hidden { display: none; }
-        .banned-msg { color: red; font-weight: bold; text-align: center; padding: 10px; }
+        .btn-close { background: #eee; border: none; padding: 10px; border-radius: 8px; margin-bottom: 20px; width: 100%; }
     </style>
 </head>
 <body>
 
-<div class="header">
-    <img src="Logo.jpg" alt="Logo" onerror="this.style.display='none'">
-    <h2 style="margin:0;">Kufar kywar</h2>
-</div>
-
-<div class="search-section">
-    <div class="search-bar">
-        <input type="text" id="search-input" placeholder="Поиск товаров...">
-        <button class="main-btn" style="width:auto; padding:0 15px;">Найти</button>
-    </div>
-    <div class="filters-container">
-        <button class="filter-btn">☰ Категории</button>
-        <button class="filter-btn">Цена</button>
-        <button class="filter-btn">Состояние</button>
-        <button class="filter-btn">Продавец</button>
+<div class="top-nav">
+    <img src="Logo.jpg" class="brand-logo" alt="">
+    <div class="search-wrapper">
+        <input type="text" id="global-search" placeholder="Поиск товаров">
     </div>
 </div>
 
-<div class="content">
-    <div class="box" id="auth-box">
-        <input type="email" id="email" placeholder="Email">
-        <input type="password" id="password" placeholder="Пароль">
-        <button class="main-btn" id="login-btn">Войти / Регистрация</button>
+<div id="main-page">
+    <div class="categories-grid">
+        <div class="cat-item"><div class="icon"></div><span>Недвижимость</span></div>
+        <div class="cat-item"><div class="icon"></div><span>Авто</span></div>
+    </div>
+    <div class="ads-container" id="ads-list"></div>
+</div>
+
+<div id="user-modal" class="modal hidden">
+    <button class="btn-close" onclick="closeModal()">← Назад</button>
+    
+    <div id="auth-form">
+        <h2>Вход в профиль</h2>
+        <input type="email" id="email" placeholder="Email" style="width:100%; padding:12px; margin:8px 0; border:1px solid #ddd; border-radius:8px;">
+        <input type="password" id="password" placeholder="Пароль" style="width:100%; padding:12px; margin:8px 0; border:1px solid #ddd; border-radius:8px;">
+        <button onclick="handleAuth()" style="width:100%; background:#2ecc71; color:white; border:none; padding:15px; border-radius:8px; font-weight:bold;">Войти</button>
     </div>
 
-    <div id="ban-message" class="box hidden banned-msg">
-        ВЫ ЗАБАНЕНЫ АДМИНИСТРАЦИЕЙ
+    <div id="admin-panel" class="hidden">
+        <h2 style="color: red;">Панель Администратора</h2>
+        <p>Вы вошли как главный админ</p>
+        <div id="ban-list-container">
+            </div>
     </div>
+</div>
 
-    <div class="box hidden" id="post-box">
-        <h3>Новое объявление</h3>
-        <input type="text" id="item-title" placeholder="Название">
-        <input type="number" id="item-price" placeholder="Цена">
-        <textarea id="item-desc" placeholder="Описание..."></textarea>
-        <button class="main-btn" id="post-btn">Опубликовать</button>
+<div class="bottom-nav" id="menu">
+    <div class="nav-item active">
+        <span class="nav-icon">🏠</span>Главная
     </div>
-
-    <div id="ads-container"></div>
+    <div class="nav-item">
+        <span class="nav-icon">❤️</span>Избранное
+    </div>
+    <div class="nav-item" onclick="openProfile()">
+        <span class="nav-icon">👤</span>Профиль
+    </div>
+    <div id="admin-menu-btn" class="nav-item hidden" onclick="openAdmin()">
+        <span class="nav-icon">🚫</span>Админ
+    </div>
 </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-    import { getDatabase, ref, push, onValue, remove, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getDatabase, ref, onValue, remove, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyD4_NVq2Tw6TaEDMTZj86zbvtJUbHOE6js",
         authDomain: "kywar-c73ac.firebaseapp.com",
         databaseURL: "https://kywar-c73ac-default-rtdb.firebaseio.com",
-        projectId: "kywar-c73ac",
-        storageBucket: "kywar-c73ac.firebasestorage.app",
-        messagingSenderId: "817464444818",
-        appId: "1:817464444818:web:eb685caf4d651e5758e34b"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getDatabase(app);
-    const adminEmail = "davidgemer507@gmail.com";
-
-    // Авторизация
-    document.getElementById('login-btn').addEventListener('click', async () => {
-        const e = document.getElementById('email').value;
-        const p = document.getElementById('password').value;
-        try { await createUserWithEmailAndPassword(auth, e, p); } 
-        catch { await signInWithEmailAndPassword(auth, e, p).catch(err => alert("Ошибка входа")); }
-    });
-
-    onAuthStateChanged(auth, (user) => {
-        if (user) {
-            document.getElementById('auth-box').classList.add('hidden');
-            checkBanStatus(user);
-        }
-    });
-
-    // Проверка бана
-    function checkBanStatus(user) {
-        onValue(ref(db, `blacklist/${user.uid}`), (snap) => {
-            if (snap.val()) {
-                document.getElementById('post-box').classList.add('hidden');
-                document.getElementById('ban-message').classList.remove('hidden');
-            } else {
-                document.getElementById('post-box').classList.remove('hidden');
-                document.getElementById('ban-message').classList.add('hidden');
-            }
-        });
-    }
-
-    // Публикация
-    document.getElementById('post-btn').addEventListener('click', async () => {
-        await push(ref(db, 'ads'), {
-            title: document.getElementById('item-title').value,
-            price: document.getElementById('item-price').value,
-            desc: document.getElementById('item-desc').value,
-            user: auth.currentUser.email,
-            uid: auth.currentUser.uid
-        });
-        alert("Опубликовано!");
-    });
-
-    // Отображение ленты
-    onValue(ref(db, 'ads'), (snap) => {
-        const container = document.getElementById('ads-container');
-        container.innerHTML = '';
-        const data = snap.val();
-        if (data) {
-            Object.keys(data).reverse().forEach(id => {
-                const ad = data[id];
-                const isAdmin = auth.currentUser && auth.currentUser.email === adminEmail;
-                
-                container.innerHTML += `
-                    <div class="ad-card">
-                        <div class="price">${ad.price} BYN</div>
-                        <h3>${ad.title}</h3>
-                        <p>${ad.desc}</p>
-                        <small>Продавец: ${ad.user}</small>
-                        ${isAdmin ? `
-                            <div class="admin-controls">
-                                <button class="del-btn" onclick="deleteAd('${id}')">Удалить</button>
-                                <button class="ban-btn" onclick="banUser('${ad.uid}', '${ad.user}')">ЗАБАНИТЬ</button>
-                            </div>
-                        ` : ''}
-                    </div>
-                `;
-            });
-        }
-    });
-
-    // Функции админа
-    window.deleteAd = (id) => { if (confirm("Удалить?")) remove(ref(db, `ads/${id}`)); };
     
-    window.banUser = (uid, email) => {
-        if (confirm(`Забанить пользователя ${email}?`)) {
-            set(ref(db, `blacklist/${uid}`), true);
-            alert("Пользователь заблокирован!");
-        }
-    };
-</script>
-</body>
-</html>
