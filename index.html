@@ -3,50 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>GemerMarket | Панель управления</title>
+    <title>GemerMarket | Live Control</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;800&display=swap" rel="stylesheet">
     
     <style>
-        :root { --p: #1a73e8; --bg: #f8f9fb; --white: #fff; --rad: 18px; }
-        body { font-family: 'Manrope', sans-serif; background: var(--bg); margin: 0; padding-bottom: 100px; color: #333; }
+        :root { --p: #1a73e8; --bg: #f8f9fb; --rad: 18px; }
+        body { font-family: 'Manrope', sans-serif; background: var(--bg); margin: 0; padding-bottom: 100px; }
         
-        /* Уведомления */
-        #toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px); background: #333; color: white; padding: 12px 24px; border-radius: 30px; z-index: 5000; transition: 0.4s; font-size: 14px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+        #toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px); background: #333; color: white; padding: 12px 24px; border-radius: 30px; z-index: 5000; transition: 0.4s; }
         #toast.show { transform: translateX(-50%) translateY(0); }
 
-        /* Шапка */
         .header { background: white; padding: 12px 16px; display: flex; align-items: center; gap: 12px; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
         .brand { font-weight: 800; font-size: 20px; color: var(--p); text-decoration: none; }
-        .search-bar { flex: 1; }
-        .search-bar input { width: 100%; background: #f1f3f4; border: none; border-radius: 12px; padding: 10px 15px; box-sizing: border-box; outline: none; }
+        .online-badge { background: #4caf50; color: white; font-size: 10px; padding: 2px 8px; border-radius: 10px; margin-left: 5px; }
 
-        /* Сетка товаров */
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 16px; }
-        .card { background: white; border-radius: var(--rad); overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.05); position: relative; }
-        .card img { width: 100%; height: 140px; object-fit: cover; background: #eee; }
+        .card { background: white; border-radius: var(--rad); overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        .card img { width: 100%; height: 140px; object-fit: cover; }
         .card-info { padding: 10px; }
-        .price { font-weight: 800; font-size: 16px; color: #000; }
-        .title { font-size: 13px; color: #555; height: 32px; overflow: hidden; margin-top: 4px; }
+        .price { font-weight: 800; font-size: 16px; }
 
-        /* Страницы */
         .page { display: none; }
         .page.active { display: block; }
+        .box { background: white; margin: 16px; padding: 20px; border-radius: var(--rad); }
+        input, textarea, select { width: 100%; padding: 14px; margin-bottom: 12px; border: 1px solid #eee; border-radius: 12px; box-sizing: border-box; }
+        .btn { background: var(--p); color: white; border: none; width: 100%; padding: 16px; border-radius: 14px; font-weight: 800; }
 
-        /* Формы и боксы */
-        .box { background: white; margin: 16px; padding: 20px; border-radius: var(--rad); box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-        input, textarea, select { width: 100%; padding: 14px; margin-bottom: 12px; border: 1px solid #eee; border-radius: 12px; box-sizing: border-box; font-family: inherit; }
-        .btn { background: var(--p); color: white; border: none; width: 100%; padding: 16px; border-radius: 14px; font-weight: 800; cursor: pointer; transition: 0.2s; }
-        .btn:active { transform: scale(0.97); }
-
-        /* Нижнее меню */
-        .nav { position: fixed; bottom: 0; width: 100%; background: white; display: flex; border-top: 1px solid #eee; padding: 12px 0; z-index: 1000; }
-        .nav-item { flex: 1; text-align: center; font-size: 11px; color: #bbb; cursor: pointer; font-weight: 600; }
+        .nav { position: fixed; bottom: 0; width: 100%; background: white; display: flex; border-top: 1px solid #eee; padding: 12px 0; }
+        .nav-item { flex: 1; text-align: center; font-size: 11px; color: #bbb; cursor: pointer; }
         .nav-item.active { color: var(--p); }
-        .nav-item i { font-size: 20px; display: block; margin-bottom: 4px; font-style: normal; }
-
-        .footer-info { text-align: center; padding: 20px; color: #ccc; font-size: 11px; }
     </style>
 </head>
 <body>
@@ -55,14 +42,11 @@
 
     <header class="header">
         <a href="#" class="brand">GemerMarket</a>
-        <div class="search-bar">
-            <input type="text" id="q" placeholder="Найти товар..." oninput="update()">
-        </div>
+        <span id="online-count" class="online-badge" style="display:none">Онлайн: 0</span>
     </header>
 
     <div id="p-home" class="page active">
         <div id="feed" class="grid"></div>
-        <div class="footer-info">© 2026 Разработано DavidGemer. Все права защищены.</div>
     </div>
 
     <div id="p-fav" class="page">
@@ -73,16 +57,10 @@
     <div id="p-post" class="page">
         <div class="box">
             <h2>Новое объявление</h2>
-            <input type="text" id="in-title" placeholder="Название товара">
-            <input type="number" id="in-price" placeholder="Цена (BYN)">
+            <input type="text" id="in-title" placeholder="Название">
+            <input type="number" id="in-price" placeholder="Цена">
             <input type="text" id="in-img" placeholder="Ссылка на фото">
-            <select id="in-cat">
-                <option value="Все">Категория</option>
-                <option value="Техника">Техника</option>
-                <option value="Одежда">Одежда</option>
-                <option value="Хобби">Хобби</option>
-            </select>
-            <textarea id="in-desc" rows="3" placeholder="Описание..."></textarea>
+            <textarea id="in-desc" placeholder="Описание..."></textarea>
             <button class="btn" onclick="save()">Опубликовать</button>
         </div>
     </div>
@@ -90,26 +68,24 @@
     <div id="p-acc" class="page">
         <div id="auth" class="box">
             <h2>Вход</h2>
-            <input type="email" id="email" placeholder="Твой Email">
+            <input type="email" id="email" placeholder="example@mail.com">
             <button class="btn" onclick="login()">Войти</button>
         </div>
         <div id="user" class="box" style="display:none; text-align:center">
-            <div style="font-size: 40px;">👤</div>
             <h3 id="u-mail"></h3>
-            <p id="u-status" style="font-weight: bold;"></p>
-            <button class="btn" style="background:#f1f3f4; color:#333; margin-top:20px" onclick="location.reload()">Выйти</button>
+            <p id="u-status"></p>
+            <button class="btn" style="background:#eee; color:#333" onclick="location.reload()">Выйти</button>
         </div>
     </div>
 
     <nav class="nav">
-        <div class="nav-item active" id="n-home" onclick="nav('home')"><i>🏠</i>Лента</div>
-        <div class="nav-item" id="n-fav" onclick="nav('fav')"><i>🤍</i>Избранное</div>
-        <div class="nav-item" id="n-post" onclick="goPost()"><i>➕</i>Подать</div>
-        <div class="nav-item" id="n-acc" onclick="nav('acc')"><i>👤</i>Профиль</div>
+        <div class="nav-item active" id="n-home" onclick="nav('home')">🏠<br>Лента</div>
+        <div class="nav-item" id="n-fav" onclick="nav('fav')">🤍<br>Избранное</div>
+        <div class="nav-item" id="n-post" onclick="goPost()">➕<br>Подать</div>
+        <div class="nav-item" id="n-acc" onclick="nav('acc')">👤<br>Профиль</div>
     </nav>
 
     <script>
-        // 1. НАСТРОЙКИ FIREBASE (Твои данные)
         const firebaseConfig = {
             apiKey: "AIzaSyD4_NVq2Tw6TaEDMTZj86zbvtJUbHOE6js",
             authDomain: "kywar-c73ac.firebaseapp.com",
@@ -122,26 +98,16 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // 2. НАСТРОЙКИ TELEGRAM
         const TG_TOKEN = "8786462162:AAFoQOvILhij4WVX_zTEK3-zdwAPsqUzRZA";
         const TG_CHAT_ID = "8001086221";
         const ADMIN = "davidgemer507@gmail.com";
         let lastUpdateId = 0;
-
         let user = null;
         let data = [];
-        let favs = JSON.parse(localStorage.getItem('g_favs')) || [];
 
-        // ОТПРАВКА В ТГ
         function sendTelegram(text, itemKey, userEmail) {
             const currentUrl = window.location.href.split('?')[0];
-            const kb = itemKey ? {
-                inline_keyboard: [[
-                    { text: "🗑 Удалить", url: `${currentUrl}?delete=${itemKey}` },
-                    { text: "🚫 Бан", url: `${currentUrl}?ban=${userEmail}` }
-                ]]
-            } : null;
-
+            const kb = itemKey ? { inline_keyboard: [[{ text: "🗑 Удалить", url: `${currentUrl}?delete=${itemKey}` }, { text: "🚫 Бан", url: `${currentUrl}?ban=${userEmail}` }]] } : null;
             fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendMessage`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -149,54 +115,70 @@
             });
         }
 
-        // ГЕНЕРАЦИЯ ID
         function generateID(email) {
             let hash = 0;
             for (let i = 0; i < email.length; i++) hash = ((hash << 5) - hash) + email.charCodeAt(i);
             return Math.abs(hash % 10000);
         }
 
-        // ВХОД
+        // ФУНКЦИЯ ОНЛАЙН
+        function setOnline(email) {
+            const myID = generateID(email);
+            const statusRef = db.ref('online_users/' + myID);
+            
+            // Устанавливаем статус "В сети"
+            statusRef.set({ email: email, last_seen: Date.now() });
+
+            // Авто-удаление при закрытии вкладки
+            statusRef.onDisconnect().remove();
+
+            // Если это не админ, уведомляем админа в ТГ
+            if(email !== ADMIN) {
+                sendTelegram(`👤 <b>Юзер зашел на сайт!</b>\nEmail: ${email}\nID: ${myID}`);
+            }
+        }
+
         function login() {
             const e = document.getElementById('email').value.trim().toLowerCase();
             if(!e) return;
             const safe = e.replace(/\./g, ',');
             db.ref('blacklist/' + safe).once('value', s => {
-                if (s.exists()) return alert("ДОСТУП ЗАПРЕЩЕН!");
-                
+                if (s.exists()) return alert("БАН!");
                 user = e;
                 const myID = generateID(e);
-                db.ref('user_ids/' + myID).set(e); // Сохраняем ID -> Email
+                db.ref('user_ids/' + myID).set(e);
+                setOnline(e); // Ставим в онлайн
 
                 document.getElementById('auth').style.display = 'none';
                 document.getElementById('user').style.display = 'block';
-                document.getElementById('u-mail').innerHTML = `${e}<br><small style="color:gray">Твой ID: ${myID}</small>`;
+                document.getElementById('u-mail').innerHTML = `${e}<br><small>ID: ${myID}</small>`;
                 
                 if(e === ADMIN) {
-                    document.getElementById('u-status').innerText = "Владелец (Админ-бот активен)";
-                    startBotListener(); // Запуск слушателя команд
+                    document.getElementById('u-status').innerText = "Главный Админ";
+                    document.getElementById('online-count').style.display = 'inline-block';
+                    startBotListener();
+                    // Следим за количеством людей онлайн
+                    db.ref('online_users').on('value', snap => {
+                        document.getElementById('online-count').innerText = "Онлайн: " + snap.numChildren();
+                    });
                 }
-                toast("С возвращением!");
-                nav('home');
+                toast("Вход выполнен!"); nav('home');
             });
         }
 
-        // СОХРАНЕНИЕ
         function save() {
             const t = document.getElementById('in-title').value;
             const p = document.getElementById('in-price').value;
-            const img = document.getElementById('in-img').value || 'https://via.placeholder.com/400x300?text=GemerMarket';
+            const img = document.getElementById('in-img').value || 'https://via.placeholder.com/300';
             if(t && p) {
                 const ref = db.ref('items').push();
-                const myID = generateID(user);
-                ref.set({ title: t, price: Number(p), img: img, owner: user, ownerID: myID, id: Date.now() }).then(() => {
-                    sendTelegram(`💎 <b>GemerMarket</b>\n📦 Товар: ${t}\n💰 Цена: ${p} BYN\n👤 Автор: ${user}\n🆔 ID: ${myID}`, ref.key, user);
-                    toast("Опубликовано!"); nav('home');
+                ref.set({ title: t, price: Number(p), img: img, owner: user, id: Date.now() }).then(() => {
+                    sendTelegram(`💎 <b>Новый Лот</b>\nТовар: ${t}\nЦена: ${p} BYN\nАвтор: ${user}`, ref.key, user);
+                    toast("Готово!"); nav('home');
                 });
             }
         }
 
-        // БОТ-СЛУШАТЕЛЬ (КОМАНДЫ)
         function startBotListener() {
             setInterval(() => {
                 fetch(`https://api.telegram.org/bot${TG_TOKEN}/getUpdates?offset=${lastUpdateId + 1}`)
@@ -205,28 +187,21 @@
                         res.result.forEach(upd => {
                             lastUpdateId = upd.update_id;
                             const m = upd.message ? upd.message.text : "";
-                            
-                            // Команда /удалить [ID]
                             if (m.startsWith('/удалить')) {
                                 const id = m.split(' ')[1];
-                                if(!id) return sendTelegram("Напиши ID. Пример: /удалить 1234");
                                 db.ref('user_ids/' + id).once('value', snap => {
-                                    const targetEmail = snap.val();
-                                    if(targetEmail) {
-                                        db.ref('blacklist/' + targetEmail.replace(/\./g, ',')).set(true);
-                                        sendTelegram(`✅ Юзер с ID ${id} (${targetEmail}) ЗАБАНЕН.`);
-                                    } else {
-                                        sendTelegram("❌ Такого ID нет.");
+                                    const email = snap.val();
+                                    if(email) {
+                                        db.ref('blacklist/' + email.replace(/\./g, ',')).set(true);
+                                        sendTelegram(`✅ ID ${id} (${email}) забанен.`);
                                     }
                                 });
                             }
-                            
-                            // Команда /список
-                            if (m === '/список') {
-                                db.ref('user_ids').once('value', snap => {
-                                    let txt = "<b>Пользователи GemerMarket:</b>\n";
-                                    snap.forEach(c => { txt += `🆔 ${c.key} — ${c.val()}\n`; });
-                                    sendTelegram(txt);
+                            if (m === '/кто') { // Новая команда: кто онлайн
+                                db.ref('online_users').once('value', snap => {
+                                    let txt = "<b>Сейчас на GemerMarket:</b>\n";
+                                    snap.forEach(c => { txt += `🟢 ${c.val().email}\n`; });
+                                    sendTelegram(txt || "Никого нет :(");
                                 });
                             }
                         });
@@ -235,13 +210,10 @@
             }, 4000);
         }
 
-        // НАВИГАЦИЯ И РЕНДЕР
         function nav(p) {
             document.querySelectorAll('.page').forEach(x => x.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(x => x.classList.remove('active'));
             document.getElementById('p-'+p).classList.add('active');
-            document.getElementById('n-'+p).classList.add('active');
-            if(p === 'fav') render(data.filter(x => favs.includes(x.id)), 'fav-feed');
+            if(p === 'fav') render(data.filter(x => (JSON.parse(localStorage.getItem('g_favs')) || []).includes(x.id)), 'fav-feed');
         }
 
         function toast(txt) {
@@ -264,27 +236,13 @@
                     <div class="card-info">
                         <div class="price">${i.price} BYN</div>
                         <div class="title">${i.title}</div>
-                        ${user === ADMIN ? `<button onclick="db.ref('items').child('${i.key}').remove()" style="background:red;color:white;border:0;width:100%;border-radius:8px;margin-top:10px;padding:5px">УДАЛИТЬ</button>` : ''}
+                        ${user === ADMIN ? `<button onclick="db.ref('items').child('${i.key}').remove()" style="background:red;color:white;border:0;width:100%;border-radius:8px;margin-top:10px">УДАЛИТЬ</button>` : ''}
                     </div>
                 </div>`;
             });
         }
 
         function goPost() { user ? nav('post') : nav('acc'); }
-
-        // ОБРАБОТКА ССЫЛОК ИЗ ТГ
-        const urlParams = new URLSearchParams(window.location.search);
-        const dk = urlParams.get('delete');
-        const be = urlParams.get('ban');
-        if (dk || be) {
-            setTimeout(() => {
-                if (user === ADMIN) {
-                    if(dk) db.ref('items').child(dk).remove().then(() => toast("Удалено лот!"));
-                    if(be) db.ref('blacklist/' + be.replace(/\./g, ',')).set(true).then(() => toast("Почта в бане!"));
-                    window.history.replaceState({}, '', '/');
-                }
-            }, 1000);
-        }
 
         db.ref('items').on('value', s => {
             data = [];
@@ -293,5 +251,4 @@
         });
     </script>
 </body>
-                </html>
-    
+</html>
