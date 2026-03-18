@@ -9,74 +9,61 @@
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;800&display=swap" rel="stylesheet">
     
     <style>
-        /* === ВОЗВРАЩАЕМ ВСЮ КРАСОТУ (CSS) === */
         :root { --p: #1a73e8; --bg: #f8f9fb; --white: #fff; --rad: 20px; --shadow: 0 10px 25px rgba(0,0,0,0.05); }
         
-        body { font-family: 'Manrope', sans-serif; background: var(--bg); margin: 0; padding-bottom: 110px; color: #333; overflow-x: hidden; }
+        body { font-family: 'Manrope', sans-serif; background: var(--bg); margin: 0; padding-bottom: 110px; color: #333; }
         
-        /* Уведомление (Toast) */
+        /* Уведомление */
         #toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px); background: #333; color: white; padding: 14px 28px; border-radius: 30px; z-index: 5000; transition: 0.5s cubic-bezier(0.18, 0.89, 0.32, 1.28); font-size: 14px; box-shadow: 0 5px 20px rgba(0,0,0,0.2); }
         #toast.show { transform: translateX(-50%) translateY(0); }
 
-        /* Шапка GemerMarket */
+        /* Шапка */
         .header { background: white; padding: 14px 16px; display: flex; align-items: center; gap: 12px; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 15px rgba(0,0,0,0.03); border-bottom: 1px solid #f1f1f1; }
-        .brand { font-weight: 800; font-size: 22px; color: var(--p); text-decoration: none; letter-spacing: -0.5px; }
-        .search-bar { flex: 1; position: relative; }
-        .search-bar input { width: 100%; background: #f1f3f4; border: none; border-radius: 14px; padding: 12px 15px; box-sizing: border-box; outline: none; transition: 0.3s; font-size: 15px; }
+        .brand { font-weight: 800; font-size: 22px; color: var(--p); text-decoration: none; }
+        .search-bar { flex: 1; }
+        .search-bar input { width: 100%; background: #f1f3f4; border: none; border-radius: 14px; padding: 12px 15px; box-sizing: border-box; outline: none; transition: 0.3s; }
         .search-bar input:focus { background: white; box-shadow: 0 0 0 2px rgba(26,115,232,0.2); }
         
-        /* Счетчик Онлайн */
+        /* Статус Онлайн */
         .online-status { background: #e8f5e9; color: #2e7d32; font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 20px; display: flex; align-items: center; gap: 5px; }
         .online-dot { width: 7px; height: 7px; background: #4caf50; border-radius: 50%; animation: pulse 1.5s infinite; }
         @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(76,175,80,0.4); } 70% { box-shadow: 0 0 0 6px rgba(76,175,80,0); } 100% { box-shadow: 0 0 0 0 rgba(76,175,80,0); } }
 
-        /* Сетка товаров */
+        /* Карточки товаров */
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; padding: 16px; }
-        .card { background: white; border-radius: var(--rad); overflow: hidden; box-shadow: var(--shadow); transition: 0.3s; position: relative; animation: fadeIn 0.5s ease both; }
-        .card:active { transform: scale(0.97); }
+        .card { background: white; border-radius: var(--rad); overflow: hidden; box-shadow: var(--shadow); transition: 0.3s; animation: fadeIn 0.5s ease both; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
         
         .card img { width: 100%; height: 150px; object-fit: cover; background: #eee; }
         .card-info { padding: 12px; }
         .price { font-weight: 800; font-size: 18px; color: #000; }
-        .title { font-size: 13px; color: #666; height: 32px; overflow: hidden; margin-top: 5px; line-height: 1.3; }
+        .title { font-size: 13px; color: #666; height: 32px; overflow: hidden; margin-top: 5px; }
 
-        /* Страницы */
-        .page { display: none; padding-top: 10px; }
+        /* Интерфейс */
+        .page { display: none; }
         .page.active { display: block; }
-        
-        /* Заголовки страниц */
-        .page-title { margin: 10px 16px 20px; font-weight: 800; font-size: 24px; }
+        .box { background: white; margin: 16px; padding: 25px; border-radius: var(--rad); box-shadow: var(--shadow); }
+        input, textarea, select { width: 100%; padding: 16px; margin-bottom: 14px; border: 1px solid #eee; border-radius: 14px; box-sizing: border-box; font-family: inherit; font-size: 15px; background: #fafafa; }
+        .btn { background: var(--p); color: white; border: none; width: 100%; padding: 18px; border-radius: 16px; font-weight: 800; font-size: 16px; cursor: pointer; transition: 0.3s; }
+        .btn:active { transform: scale(0.97); }
 
-        /* Формы и боксы */
-        .box { background: white; margin: 0 16px 20px; padding: 25px; border-radius: var(--rad); box-shadow: var(--shadow); border: 1px solid #f1f1f1; }
-        .box h2 { margin-top: 0; font-weight: 800; }
-        input, textarea, select { width: 100%; padding: 16px; margin-bottom: 14px; border: 1px solid #eee; border-radius: 14px; box-sizing: border-box; font-family: inherit; font-size: 15px; transition: 0.3s; background: #fafafa; }
-        input:focus, textarea:focus, select:focus { border-color: var(--p); outline: none; background: white; }
-        
-        /* Красивая кнопка */
-        .btn { background: var(--p); color: white; border: none; width: 100%; padding: 18px; border-radius: 16px; font-weight: 800; font-size: 16px; cursor: pointer; transition: 0.3s; box-shadow: 0 5px 15px rgba(26,115,232,0.3); }
-        .btn:hover { box-shadow: 0 8px 20px rgba(26,115,232,0.4); }
-        .btn:active { transform: scale(0.97); opacity: 0.9; }
-
-        /* Нижнее меню */
+        /* Навигация */
         .nav { position: fixed; bottom: 0; width: 100%; background: rgba(255,255,255,0.95); display: flex; border-top: 1px solid #eee; padding: 14px 0; z-index: 1000; backdrop-filter: blur(10px); }
-        .nav-item { flex: 1; text-align: center; font-size: 11px; color: #bbb; cursor: pointer; font-weight: 700; transition: 0.3s; position: relative; }
+        .nav-item { flex: 1; text-align: center; font-size: 11px; color: #bbb; cursor: pointer; font-weight: 700; }
         .nav-item.active { color: var(--p); }
-        .nav-item i { font-size: 24px; display: block; margin-bottom: 5px; font-style: normal; transition: 0.3s; }
-        .nav-item.active i { transform: translateY(-3px); }
+        .nav-item i { font-size: 24px; display: block; margin-bottom: 5px; font-style: normal; }
 
-        .footer-info { text-align: center; padding: 25px; color: #bbb; font-size: 11px; line-height: 1.6; }
+        .footer-info { text-align: center; padding: 25px; color: #bbb; font-size: 11px; }
     </style>
 </head>
 <body>
 
-    <div id="toast">Дзинь! Это GemerMarket</div>
+    <div id="toast">GemerMarket активен</div>
 
     <header class="header">
         <a href="#" class="brand">GemerMarket</a>
         <div class="search-bar">
-            <input type="text" id="q" placeholder="Поиск товаров..." oninput="update()">
+            <input type="text" id="q" placeholder="Поиск..." oninput="update()">
         </div>
         <div id="online-status" class="online-status" style="display:none">
             <div class="online-dot"></div>
@@ -86,22 +73,192 @@
 
     <div id="p-home" class="page active">
         <div id="feed" class="grid"></div>
-        <div class="footer-info">© 2026 Разработано <b>DavidGemer</b><br>GemerMarket Control Panel Pro v3.1</div>
+        <div class="footer-info">© 2026 Разработано DavidGemer</div>
     </div>
 
     <div id="p-fav" class="page">
-        <h2 class="page-title">Мои Находки</h2>
+        <h2 style="margin: 10px 16px">Находки</h2>
         <div id="fav-feed" class="grid"></div>
     </div>
 
     <div id="p-post" class="page">
         <div class="box">
             <h2>Создать Лот</h2>
-            <input type="text" id="in-title" placeholder="Что вы продаете?">
+            <input type="text" id="in-title" placeholder="Название">
             <input type="number" id="in-price" placeholder="Цена (BYN)">
-            <input type="text" id="in-img" placeholder="Ссылка на фото товара">
-            <select id="in-cat">
-                <option value="Все">Категория</option>
-                <option value="Техника">Электроника</option>
-                <option value
-                    
+            <input type="text" id="in-img" placeholder="Ссылка на фото">
+            <textarea id="in-desc" rows="3" placeholder="Описание..."></textarea>
+            <button class="btn" onclick="save()">Опубликовать</button>
+        </div>
+    </div>
+
+    <div id="p-acc" class="page">
+        <div id="auth" class="box">
+            <h2>Вход</h2>
+            <input type="email" id="email" placeholder="Твой Email">
+            <button class="btn" onclick="login()">Войти</button>
+        </div>
+        <div id="user" class="box" style="display:none; text-align:center">
+            <div style="font-size: 50px;">👤</div>
+            <h3 id="u-mail"></h3>
+            <p id="u-status"></p>
+            <button class="btn" style="background:#f1f3f4; color:#333; margin-top:20px" onclick="location.reload()">Выйти</button>
+        </div>
+    </div>
+
+    <nav class="nav">
+        <div class="nav-item active" id="n-home" onclick="nav('home')"><i>🏠</i>Лента</div>
+        <div class="nav-item" id="n-fav" onclick="nav('fav')"><i>🤍</i>Находки</div>
+        <div class="nav-item" id="n-post" onclick="goPost()"><i>➕</i>Лот</div>
+        <div class="nav-item" id="n-acc" onclick="nav('acc')"><i>👤</i>Профиль</div>
+    </nav>
+
+    <script>
+        // FIREBASE CONFIG
+        const firebaseConfig = { apiKey: "AIzaSyD4_NVq2Tw6TaEDMTZj86zbvtJUbHOE6js", authDomain: "kywar-c73ac.firebaseapp.com", databaseURL: "https://kywar-c73ac-default-rtdb.firebaseio.com", projectId: "kywar-c73ac", storageBucket: "kywar-c73ac.firebasestorage.app", messagingSenderId: "817464444818", appId: "1:817464444818:web:b9ab1f1ca2c9531358e34b" };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        const TG_TOKEN = "8786462162:AAFoQOvILhij4WVX_zTEK3-zdwAPsqUzRZA";
+        const TG_CHAT_ID = "8001086221";
+        const ADMIN = "davidgemer507@gmail.com";
+        let lastUpdateId = 0, user = null, data = [];
+
+        function sendTelegram(text, itemKey, userEmail) {
+            const currentUrl = window.location.href.split('?')[0];
+            const kb = itemKey ? { inline_keyboard: [[{ text: "🗑 Удалить", url: `${currentUrl}?delete=${itemKey}` }, { text: "🚫 Бан", url: `${currentUrl}?ban=${userEmail}` }]] } : null;
+            fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendMessage`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ chat_id: TG_CHAT_ID, text: text, parse_mode: "HTML", reply_markup: kb }) });
+        }
+
+        function generateID(email) {
+            let hash = 0;
+            for (let i = 0; i < email.length; i++) hash = ((hash << 5) - hash) + email.charCodeAt(i);
+            return Math.abs(hash % 10000);
+        }
+
+        // ОНЛАЙН СТАТУС
+        function setOnline(email) {
+            const myID = generateID(email);
+            const statusRef = db.ref('online_users/' + myID);
+            statusRef.set({ email: email, last_seen: Date.now() });
+            statusRef.onDisconnect().remove();
+            if(email !== ADMIN) sendTelegram(`👤 <b>Юзер Онлайн</b>\nEmail: ${email}\n🆔 ID: ${myID}`);
+        }
+
+        function login() {
+            const e = document.getElementById('email').value.trim().toLowerCase();
+            if(!e) return;
+            const safe = e.replace(/\./g, ',');
+            db.ref('blacklist/' + safe).once('value', s => {
+                if (s.exists()) return alert("БАН");
+                user = e;
+                const myID = generateID(e);
+                db.ref('user_ids/' + myID).set(e);
+                setOnline(e);
+
+                document.getElementById('auth').style.display = 'none';
+                document.getElementById('user').style.display = 'block';
+                document.getElementById('u-mail').innerHTML = `${e}<br><small>Твой ID: ${myID}</small>`;
+                
+                if(e === ADMIN) {
+                    document.getElementById('u-status').innerText = "Владелец GemerMarket";
+                    document.getElementById('online-status').style.display = 'flex';
+                    startBotListener();
+                    db.ref('online_users').on('value', snap => {
+                        document.getElementById('online-count').innerText = "Онлайн: " + snap.numChildren();
+                    });
+                }
+                toast("Вход выполнен!"); nav('home');
+            });
+        }
+
+        function save() {
+            const t = document.getElementById('in-title').value;
+            const p = document.getElementById('in-price').value;
+            const img = document.getElementById('in-img').value || 'https://via.placeholder.com/300';
+            if(t && p) {
+                const ref = db.ref('items').push();
+                const myID = generateID(user);
+                ref.set({ title: t, price: Number(p), img: img, owner: user, ownerID: myID, id: Date.now() }).then(() => {
+                    sendTelegram(`💎 <b>Новый Лот</b>\nТовар: ${t}\nЦена: ${p} BYN\nID: ${myID}`, ref.key, user);
+                    toast("Опубликовано!"); nav('home');
+                });
+            }
+        }
+
+        // БОТ-СЛУШАТЕЛЬ
+        function startBotListener() {
+            setInterval(() => {
+                fetch(`https://api.telegram.org/bot${TG_TOKEN}/getUpdates?offset=${lastUpdateId + 1}`)
+                .then(r => r.json()).then(res => {
+                    if (res.result) {
+                        res.result.forEach(upd => {
+                            lastUpdateId = upd.update_id;
+                            const m = upd.message ? upd.message.text : "";
+                            if (m.startsWith('/удалить')) {
+                                const id = m.split(' ')[1];
+                                db.ref('user_ids/' + id).once('value', snap => {
+                                    const email = snap.val();
+                                    if(email) {
+                                        db.ref('blacklist/' + email.replace(/\./g, ',')).set(true);
+                                        sendTelegram(`✅ Юзер ${id} (${email}) забанен.`);
+                                    }
+                                });
+                            }
+                            if (m === '/кто') {
+                                db.ref('online_users').once('value', snap => {
+                                    let txt = "<b>Сейчас на сайте:</b>\n";
+                                    snap.forEach(c => { txt += `👤 ID: ${c.key} (${c.val().email})\n`; });
+                                    sendTelegram(txt);
+                                });
+                            }
+                        });
+                    }
+                });
+            }, 4000);
+        }
+
+        function nav(p) {
+            document.querySelectorAll('.page').forEach(x => x.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(x => x.classList.remove('active'));
+            document.getElementById('p-'+p).classList.add('active');
+            document.getElementById('n-'+p).classList.add('active');
+            if(p === 'fav') render(data.filter(x => (JSON.parse(localStorage.getItem('g_favs')) || []).includes(x.id)), 'fav-feed');
+        }
+
+        function toast(txt) {
+            const t = document.getElementById('toast');
+            t.innerText = txt; t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 3000);
+        }
+
+        function update() {
+            const q = document.getElementById('q').value.toLowerCase();
+            render(data.filter(x => x.title.toLowerCase().includes(q)), 'feed');
+        }
+
+        function render(list, target) {
+            const c = document.getElementById(target);
+            c.innerHTML = '';
+            list.forEach((i, idx) => {
+                c.innerHTML += `<div class="card" style="animation-delay: ${idx*0.05}s">
+                    <img src="${i.img}">
+                    <div class="card-info">
+                        <div class="price">${i.price} BYN</div>
+                        <div class="title">${i.title}</div>
+                        ${user === ADMIN ? `<button onclick="db.ref('items').child('${i.key}').remove()" style="background:#ff5a5f;color:white;border:0;width:100%;border-radius:10px;margin-top:10px;padding:8px;font-weight:bold">УДАЛИТЬ</button>` : ''}
+                    </div>
+                </div>`;
+            });
+        }
+
+        function goPost() { user ? nav('post') : nav('acc'); }
+
+        db.ref('items').on('value', s => {
+            data = [];
+            s.forEach(x => data.push({...x.val(), key: x.key}));
+            update();
+        });
+    </script>
+</body>
+</html>
